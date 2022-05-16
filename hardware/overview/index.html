@@ -299,9 +299,61 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Overview
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rf-signal-path" class="md-nav__link">
+    RF Signal Path
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#power-distribution" class="md-nav__link">
+    Power Distribution
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clocks-references-and-timing" class="md-nav__link">
+    Clocks, References and Timing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitor-and-control" class="md-nav__link">
+    Monitor and Control
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -343,7 +395,7 @@
   
     <li class="md-nav__item">
       <a href="../fpga/" class="md-nav__link">
-        Digital Frontend
+        Digital Backend
       </a>
     </li>
   
@@ -432,6 +484,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../software/snap/" class="md-nav__link">
+        SNAP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../software/pipeline/" class="md-nav__link">
         Pipeline
       </a>
@@ -481,6 +547,42 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rf-signal-path" class="md-nav__link">
+    RF Signal Path
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#power-distribution" class="md-nav__link">
+    Power Distribution
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clocks-references-and-timing" class="md-nav__link">
+    Clocks, References and Timing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitor-and-control" class="md-nav__link">
+    Monitor and Control
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -494,6 +596,75 @@
 
 
 <h1 id="hardware-overview">Hardware Overview</h1>
+<p>The GReX hardware system has several "top level" components, which constitute
+the entire system. These include the <a href="../feed/">feed antenna</a> and low noise
+amplifiers (LNA), the <a href="../fem/">frontend module</a>, the <a href="../fpga/">digital backend</a>,
+and of course the server. The following diagrams lay out general overview of the
+interconnections. Showing them all at once would be a bit much, so they're
+broken down here into discrete kinds of signals.</p>
+<h2 id="rf-signal-path">RF Signal Path</h2>
+<pre class="mermaid"><code>flowchart TD
+    A[Feed]
+    B[FEM]
+    C[SNAP]
+    D[Server]
+    A --&gt; L1[LNA]
+    A --&gt; L2[LNA]
+    L1 --&gt;|H Pol| B
+    L2 --&gt;|V Pol| B
+    subgraph The Box
+        B --&gt;|H Pol| C
+        B --&gt;|V Pol| C
+    end
+    C --&gt;|10 GbE| D[Server]</code></pre>
+<h2 id="power-distribution">Power Distribution</h2>
+<pre class="mermaid"><code>flowchart BT
+    L1[LNA]
+    L2[LNA]
+    B[FEM]
+    C[SNAP]
+    S[Switching Supply]
+    R[Linear Regulator]
+    P[Raspberry Pi]
+    M[Mains Power]
+    V[Synthesizer]
+    G[GPS Receiver]
+    M --&gt;|120-240V AC| S
+    subgraph The Box
+        R --&gt;|6.5V DC| V
+        P --&gt;|"5V DC (USB)"| G
+        S --&gt;|12V DC| C
+        S --&gt;|12V DC| R
+        R --&gt;|6.5V DC| B
+        C --&gt;|5V DC| P
+    end
+    B ---&gt;|5.5V DC| L1
+    B ---&gt;|5.5V DC| L2</code></pre>
+<h2 id="clocks-references-and-timing">Clocks, References and Timing</h2>
+<pre class="mermaid"><code>flowchart BT
+    B[FEM]
+    V[Synthesizer]
+    G[GPS Receiver]
+    S[SNAP]
+    A[GPS Antenna]
+    subgraph The Box
+        G --&gt;|10 MHz| V
+        G --&gt;|PPS| S
+        V --&gt;|250 MHz| S
+        V --&gt;|1030 MHz| B
+    end
+    A --&gt; G</code></pre>
+<h2 id="monitor-and-control">Monitor and Control</h2>
+<pre class="mermaid"><code>flowchart TB
+    B[FEM]
+    S[SNAP]
+    P[Raspberry Pi]
+    D[Server]
+    subgraph The Box
+        P &lt;--&gt;|UART| B
+        S &lt;--&gt;|GPIO| P
+    end
+    P &lt;---&gt;|1 GbE| D</code></pre>
 
               
             </article>
