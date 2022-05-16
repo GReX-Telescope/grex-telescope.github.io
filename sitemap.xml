@@ -41,6 +41,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://grex-telescope.github.io/software/guix/</loc>
+         <lastmod>2022-05-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://grex-telescope.github.io/software/overview/</loc>
          <lastmod>2022-05-16</lastmod>
          <changefreq>daily</changefreq>
