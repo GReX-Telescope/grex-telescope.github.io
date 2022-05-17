@@ -445,9 +445,67 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Guix
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Guix
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#partitions" class="md-nav__link">
+    Partitions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-installation" class="md-nav__link">
+    Initial Installation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-system-setup" class="md-nav__link">
+    Initial System Setup
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -509,6 +567,48 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#partitions" class="md-nav__link">
+    Partitions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-installation" class="md-nav__link">
+    Initial Installation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-system-setup" class="md-nav__link">
+    Initial System Setup
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -548,6 +648,61 @@ CUDA, and non-free software in general, denies users the ability to study and mo
 This is detrimental to user freedom and to proper scientific review and experimentation.
 As such, we ask that you not share these modules widely as to encourage more open alternatives.</p>
 </div>
+<h2 id="installation">Installation</h2>
+<p>To start from a bare server, we need a few prerequisites. First, to actually
+build the install image, you need guix the guix binary installed. Installer isos
+will be provided, eventually.</p>
+<p>Clone the <a href="https://github.com/GReX-Telescope/guix-grex">GReX Guix</a> repo and run,
+this may take a while.</p>
+<div class="highlight"><pre><span></span><code>$ guix system image --image-type<span class="o">=</span>iso9660 system/install.scm
+</code></pre></div>
+<p>After that, make an installation media, either CD or USB and boot into it. If
+you want to make a USB, simply</p>
+<div class="highlight"><pre><span></span><code>$ sudo dd <span class="k">if</span><span class="o">=</span>&lt;the iso that was created&gt; <span class="nv">of</span><span class="o">=</span>/dev/&lt;your USB&gt; <span class="nv">status</span><span class="o">=</span>progress <span class="nv">bs</span><span class="o">=</span>32M <span class="o">&amp;&amp;</span> sync
+</code></pre></div>
+<p>Once you boot into the installation media, select "Install using the shell based
+process"</p>
+<h3 id="partitions">Partitions</h3>
+<p>We'll partition the servers with UEFI, you can use any tool you like for this, I
+like <code>cfdisk</code>. You'll need to make a 512M vfat partition for EFI and then ext4
+the rest.</p>
+<p>Then, format and mount the partitions</p>
+<div class="highlight"><pre><span></span><code>mkfs.ext4 /dev/root_partition
+mkfs.fat -F <span class="m">32</span> /dev/efi_system_partition
+mount /dev/root_partition /mnt
+mount --mkdir /dev/efi_system_partition /mnt/boot/efi
+</code></pre></div>
+<p>Now we can setup the installation environment with</p>
+<div class="highlight"><pre><span></span><code>herd start cow-store /mnt
+</code></pre></div>
+<h3 id="initial-installation">Initial Installation</h3>
+<p>First, we need to grab the system configuration for <em>this</em> machine (assuming it
+exists). GReX servers we control will have their own configuration file.</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/GReX-Telescope/guix-grex
+</code></pre></div>
+<p>First, we'll copy over the channels and update (this may take a while)</p>
+<div class="highlight"><pre><span></span><code>mkdir -p ~/.config/guix
+cp guix-grex/channels.scm ~/.config/guix
+guix pull
+<span class="nb">hash</span> guix  <span class="c1"># This is necessary to ensure the updated profile path is active!</span>
+</code></pre></div>
+<p>Then initialize the system with</p>
+<div class="highlight"><pre><span></span><code>guix system -L guix-grex init guix-grex/system/grex-01.scm /mnt
+</code></pre></div>
+<h3 id="initial-system-setup">Initial System Setup</h3>
+<p>Now you can reboot and setup the users!</p>
+<p>First, we need to change the password. Login as root and</p>
+<div class="highlight"><pre><span></span><code>passwd      <span class="c1"># For root</span>
+passwd grex <span class="c1"># For the GReX user</span>
+</code></pre></div>
+<p>Again, we need to pull down our channels list</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/GReX-Telescope/guix-grex
+ln -sf guix-grex/channels.scm ~/.config/guix/channels.scm
+</code></pre></div>
+<p>And then one final pull</p>
+<div class="highlight"><pre><span></span><code>guix pull
+</code></pre></div>
+<p>We're ready to go!</p>
 
               
             </article>
