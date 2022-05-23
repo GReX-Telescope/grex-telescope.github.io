@@ -448,6 +448,46 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#software-manifesto" class="md-nav__link">
+    Software Manifesto
+  </a>
+  
+    <nav class="md-nav" aria-label="Software Manifesto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#language-specific" class="md-nav__link">
+    Language Specific
+  </a>
+  
+    <nav class="md-nav" aria-label="Language Specific">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    C++
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    Python
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -553,6 +593,46 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#software-manifesto" class="md-nav__link">
+    Software Manifesto
+  </a>
+  
+    <nav class="md-nav" aria-label="Software Manifesto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#language-specific" class="md-nav__link">
+    Language Specific
+  </a>
+  
+    <nav class="md-nav" aria-label="Language Specific">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    C++
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    Python
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -585,6 +665,24 @@ to reduce the potential of mis-configuration.</p>
     A[SNAP] --&gt;|UDP| B[Packet Capture]
     B --&gt;|PSRDADA| C[Heimdall]
     C --&gt;|"?"| D["?"]</code></pre>
+<h2 id="software-manifesto">Software Manifesto</h2>
+<p>To limit downtime and maximize reproducability, we will try to adopt a consistent software development strategy. Primarily:</p>
+<ul>
+<li>Builds will be deterministic and reproducible</li>
+<li>Code will be version controlled, organized, and public</li>
+</ul>
+<h3 id="language-specific">Language Specific</h3>
+<h4 id="c">C++</h4>
+<ul>
+<li>Code will be formatted with clang-format's LLVM style</li>
+<li>Try to minimize (solve) all errors from -Wall</li>
+</ul>
+<h4 id="python">Python</h4>
+<ul>
+<li>Code will be formatted with Black</li>
+<li>Gradual typing will be used (PEP 438) and checked with mypy or equivalent</li>
+<li>Environments will have pinned dependencies (reproducible)</li>
+</ul>
 
               
             </article>

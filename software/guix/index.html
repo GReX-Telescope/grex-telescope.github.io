@@ -687,7 +687,8 @@ guix pull
 <span class="nb">hash</span> guix  <span class="c1"># This is necessary to ensure the updated profile path is active!</span>
 </code></pre></div>
 <p>Then initialize the system with</p>
-<div class="highlight"><pre><span></span><code>guix system -L guix-grex init guix-grex/system/grex-01.scm /mnt
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> guix-grex
+guix system -L . init system/grex-01.scm /mnt
 </code></pre></div>
 <h3 id="initial-system-setup">Initial System Setup</h3>
 <p>Now you can reboot and setup the users!</p>
