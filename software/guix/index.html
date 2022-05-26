@@ -633,14 +633,7 @@ preexisting software as well as some custom code. To ensure all of these
 components work together in harmony, we'll host a guix channel that provides the
 build recipes for our software
 <a href="https://github.com/GReX-Telescope/guix-grex">here</a>. Most of this software,
-however, relies on the non-free CUDA runtime. As such, the user of these modules
-must add the <a href="https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free">proprietary HPC
-channel</a> to their guix channels.</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">channel</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nf">name</span><span class="w"> </span><span class="ss">&#39;guix-hpc-non-free</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nf">url</span><span class="w"> </span><span class="s">&quot;https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git&quot;</span><span class="p">))</span><span class="w"></span>
-<span class="w">      </span><span class="nv">%default-channels</span><span class="p">)</span><span class="w"></span>
-</code></pre></div>
+however, relies on the non-free CUDA runtime.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>As a note, we are using non-free CUDA as to leverage high-performance preexisting code.
@@ -648,13 +641,20 @@ CUDA, and non-free software in general, denies users the ability to study and mo
 This is detrimental to user freedom and to proper scientific review and experimentation.
 As such, we ask that you not share these modules widely as to encourage more open alternatives.</p>
 </div>
+<p>To utilize any of our packaged software, you must add our channel to your <code>channels.scm</code></p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">channel</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nf">name</span><span class="w"> </span><span class="ss">&#39;guix-grex</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nf">url</span><span class="w"> </span><span class="s">&quot;https://github.com/GReX-Telescope/guix-grex.git&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nf">branch</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">      </span><span class="nv">%default-channels</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
 <h2 id="installation">Installation</h2>
 <p>To start from a bare server, we need a few prerequisites. First, to actually
 build the install image, you need guix the guix binary installed. Installer isos
 will be provided, eventually.</p>
 <p>Clone the <a href="https://github.com/GReX-Telescope/guix-grex">GReX Guix</a> repo and run,
 this may take a while.</p>
-<div class="highlight"><pre><span></span><code>$ guix system image --image-type<span class="o">=</span>iso9660 system/install.scm
+<div class="highlight"><pre><span></span><code>$ guix system image --image-type<span class="o">=</span>iso9660 grex/system/install.scm
 </code></pre></div>
 <p>After that, make an installation media, either CD or USB and boot into it. If
 you want to make a USB, simply</p>
@@ -670,7 +670,8 @@ the rest.</p>
 <div class="highlight"><pre><span></span><code>mkfs.ext4 /dev/root_partition
 mkfs.fat -F <span class="m">32</span> /dev/efi_system_partition
 mount /dev/root_partition /mnt
-mount --mkdir /dev/efi_system_partition /mnt/boot/efi
+mkdir -p /mnt/boot/efi
+mount /dev/efi_system_partition /mnt/boot/efi
 </code></pre></div>
 <p>Now we can setup the installation environment with</p>
 <div class="highlight"><pre><span></span><code>herd start cow-store /mnt
@@ -682,13 +683,19 @@ exists). GReX servers we control will have their own configuration file.</p>
 </code></pre></div>
 <p>First, we'll copy over the channels and update (this may take a while)</p>
 <div class="highlight"><pre><span></span><code>mkdir -p ~/.config/guix
-cp guix-grex/channels.scm ~/.config/guix
-guix pull
-<span class="nb">hash</span> guix  <span class="c1"># This is necessary to ensure the updated profile path is active!</span>
+</code></pre></div>
+<p>Then open your editor of choice (we include vim and emacs in the installer
+image) and add the channels form from above to <code>~/.config/guix/channels.scm</code></p>
+<p>Then</p>
+<div class="highlight"><pre><span></span><code><span class="nv">guix</span><span class="w"> </span><span class="nv">pull</span><span class="w"></span>
+<span class="nb">hash</span><span class="w"> </span><span class="nv">guix</span><span class="w">  </span><span class="o">#</span><span class="w"> </span><span class="nv">This</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">necessary</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">ensure</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">updated</span><span class="w"> </span><span class="nv">profile</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">active!</span><span class="w"></span>
 </code></pre></div>
 <p>Then initialize the system with</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> guix-grex
-guix system -L . init system/grex-01.scm /mnt
+guix system -L . init grex/system/&lt;specific server&gt;.scm /mnt
+</code></pre></div>
+<p>For example, we can provision the <code>grex-01</code> server with</p>
+<div class="highlight"><pre><span></span><code><span class="nv">guix</span><span class="w"> </span><span class="nb">system</span><span class="w"> </span><span class="nv">-L</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">init</span><span class="w"> </span><span class="nv">grex/system/grex-01</span><span class="o">.</span><span class="nv">scm</span><span class="w"> </span><span class="nv">/mnt</span><span class="w"></span>
 </code></pre></div>
 <h3 id="initial-system-setup">Initial System Setup</h3>
 <p>Now you can reboot and setup the users!</p>
@@ -696,11 +703,8 @@ guix system -L . init system/grex-01.scm /mnt
 <div class="highlight"><pre><span></span><code>passwd      <span class="c1"># For root</span>
 passwd grex <span class="c1"># For the GReX user</span>
 </code></pre></div>
-<p>Again, we need to pull down our channels list</p>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/GReX-Telescope/guix-grex
-ln -sf guix-grex/channels.scm ~/.config/guix/channels.scm
-</code></pre></div>
-<p>And then one final pull</p>
+<p>Then, do the same steps of adding the GReX channels list to
+<code>~/.config/guix/channels.scm</code> and then one final pull</p>
 <div class="highlight"><pre><span></span><code>guix pull
 </code></pre></div>
 <p>We're ready to go!</p>
