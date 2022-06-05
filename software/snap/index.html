@@ -456,9 +456,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#raspberry-pi" class="md-nav__link">
-    Raspberry Pi
+  <a href="#katcp-and-the-raspberry-pi" class="md-nav__link">
+    KATCP and the Raspberry Pi
   </a>
+  
+    <nav class="md-nav" aria-label="KATCP and the Raspberry Pi">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#katcp-networking" class="md-nav__link">
+    KATCP Networking
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -554,9 +567,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#raspberry-pi" class="md-nav__link">
-    Raspberry Pi
+  <a href="#katcp-and-the-raspberry-pi" class="md-nav__link">
+    KATCP and the Raspberry Pi
   </a>
+  
+    <nav class="md-nav" aria-label="KATCP and the Raspberry Pi">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#katcp-networking" class="md-nav__link">
+    KATCP Networking
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -588,8 +614,16 @@ at Berkeley. This board contains the analog to digital converters and Xilinx
 FPGA to perform the digitization and F-engine components of the system.</p>
 <p>The setup and configuration of this board has seemingly never been well
 documented, so we'll try to make it as painless as possible here.</p>
-<h2 id="raspberry-pi">Raspberry Pi</h2>
+<h2 id="katcp-and-the-raspberry-pi">KATCP and the Raspberry Pi</h2>
+<p>The SNAP board itself has no nonvolatile memory, so every time it is power-cycled, it must be reconfigured.
+Rather than require the user to bring along (and know how to use) a JTAG programmer, the folks at CASPER
+have added a Raspsberry Pi header such that the GPIO from a Pi can bit-bang JTAG. To expose this functionality
+from remote devices, saving you the trouble from SSHing, they've implemented a KATCP server on the Pi. <a href="https://katcp-python.readthedocs.io/en/latest/_downloads/361189acb383a294be20d6c10c257cb4/NRF-KAT7-6.0-IFCE-002-Rev5-1.pdf">KATCP</a>
+is a monitor and control protocol developed by the folks at SARAO that purports easy usage and extension. <a href="https://casper.astro.berkeley.edu/wiki/KATCP">Here</a> is the list of commands they've added, which has not been updated since 2012.</p>
 <p>TODO! Where do we get the magic image? Do we have to configure it?</p>
+<h3 id="katcp-networking">KATCP Networking</h3>
+<p>The Pi is (hopefully) configured to speak KATCP on <code>10.10.1.3:7147</code>. You can check this by opening a telnet connection at that address
+and running the <code>?watchdog</code> command. You should receive a <code>!watchdog ok</code> response.</p>
 <h2 id="bringup">Bringup</h2>
 <p>TODO Cleanup This</p>
 <p>katcp=0.5.4
