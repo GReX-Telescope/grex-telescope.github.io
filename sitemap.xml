@@ -2,62 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://grex-telescope.github.io/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/about/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/hardware/assembly/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/hardware/box/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/hardware/feed/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/hardware/fem/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/hardware/fpga/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/hardware/overview/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/software/guix/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/software/overview/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/software/pipeline/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://grex-telescope.github.io/software/snap/</loc>
-         <lastmod>2022-06-05</lastmod>
+         <lastmod>2022-06-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
