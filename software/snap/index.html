@@ -476,8 +476,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#bringup" class="md-nav__link">
-    Bringup
+  <a href="#programming" class="md-nav__link">
+    Programming
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fpga-clocks-references-pps-synthesizers" class="md-nav__link">
+    FPGA Clocks, References, PPS, Synthesizers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adc-configuration" class="md-nav__link">
+    ADC Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#networking" class="md-nav__link">
+    Networking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bringup-verification" class="md-nav__link">
+    Bringup Verification
   </a>
   
 </li>
@@ -587,8 +615,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#bringup" class="md-nav__link">
-    Bringup
+  <a href="#programming" class="md-nav__link">
+    Programming
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fpga-clocks-references-pps-synthesizers" class="md-nav__link">
+    FPGA Clocks, References, PPS, Synthesizers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adc-configuration" class="md-nav__link">
+    ADC Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#networking" class="md-nav__link">
+    Networking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bringup-verification" class="md-nav__link">
+    Bringup Verification
   </a>
   
 </li>
@@ -615,7 +671,8 @@ FPGA to perform the digitization and F-engine components of the system.</p>
 <p>The setup and configuration of this board has seemingly never been well
 documented, so we'll try to make it as painless as possible here.</p>
 <h2 id="katcp-and-the-raspberry-pi">KATCP and the Raspberry Pi</h2>
-<p>The SNAP board itself has no nonvolatile memory, so every time it is power-cycled, it must be reconfigured.
+<p>The SNAP board itself has no nonvolatile memory, so every time it is
+power-cycled, it must be reconfigured. 
 Rather than require the user to bring along (and know how to use) a JTAG programmer, the folks at CASPER
 have added a Raspsberry Pi header such that the GPIO from a Pi can bit-bang JTAG. To expose this functionality
 from remote devices, saving you the trouble from SSHing, they've implemented a
@@ -625,16 +682,34 @@ is a monitor and control protocol developed by the folks at SARAO that purports 
 <p>TODO! Where do we get the magic image? Do we have to configure it?</p>
 <h3 id="katcp-networking">KATCP Networking</h3>
 <p>The Pi is (hopefully) configured to speak KATCP on <code>10.10.1.3:7147</code>. You can check this by opening a telnet connection at that address
-and running the <code>?watchdog</code> command. You should receive a <code>!watchdog ok</code> response.</p>
-<h2 id="bringup">Bringup</h2>
-<p>TODO Cleanup This</p>
-<p>katcp=0.5.4
-corr=0.7.3
-construct=2.5.0</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">corr</span> <span class="kn">import</span> <span class="n">katcp_wrapper</span>
-<span class="n">f</span> <span class="o">=</span> <span class="n">katcp_wrapper</span><span class="o">.</span><span class="n">FpgaClient</span><span class="p">(</span><span class="s1">&#39;10.10.1.3&#39;</span><span class="p">)</span>
-<span class="n">f</span><span class="o">.</span><span class="n">listbof</span><span class="p">()</span>
-</code></pre></div>
+and running the <code>?watchdog</code> command. You should receive a <code>!watchdog ok</code>
+response.</p>
+<h2 id="programming">Programming</h2>
+<p>The core of the SNAP is the FPGA, whose job in GReX is to grab voltage samples
+from the analog to digital converters (ADCs), run them through a polyphase
+filterbank (PBF) to channelize, and send those channels out over the 10 GbE
+network interface. You would think this would be simple...</p>
+<p>The "code" for the FPGA is stored as a bitstream file (BOF). How these files are
+created is beyond the scope of these docs, but at some point we will provide
+this binary blob. Before anything happens, this blob needs to be uploaded to the
+FPGA. As mentioned before, this is done over katcp.</p>
+<p>TODO! How do we do this? corr? casperfpga? Kiran's new rust tool?</p>
+<h2 id="fpga-clocks-references-pps-synthesizers">FPGA Clocks, References, PPS, Synthesizers</h2>
+<p>The FPGA needs an external clock source, which is being provided via one of the
+output of the Valon synthesizer in box. Additionally, the board needs "pulse per
+second" (PPS) ticks, which come from the GPS reciever. If the user is in a place
+which doesn't have GPS (maybe in a lab during testing), we can override that
+check.</p>
+<p>TODO! Somehow</p>
+<p>TODO! Check clock is good and everything is locked? Does this happen after ADC configuration?</p>
+<h2 id="adc-configuration">ADC Configuration</h2>
+<p>The next step is to set up the ADCs</p>
+<h2 id="networking">Networking</h2>
+<p>After the ADCs are setup, we need to configure the SNAP to start giving us data
+over 10 GbE.</p>
+<p>TODO! How?</p>
+<h2 id="bringup-verification">Bringup Verification</h2>
+<p>TODO! Do we run the test patterns to make sure things are working?</p>
 
               
             </article>
