@@ -464,6 +464,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#pi-networking" class="md-nav__link">
+    Pi Networking
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#katcp-networking" class="md-nav__link">
     KATCP Networking
   </a>
@@ -603,6 +610,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#pi-networking" class="md-nav__link">
+    Pi Networking
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#katcp-networking" class="md-nav__link">
     KATCP Networking
   </a>
@@ -679,7 +693,20 @@ from remote devices, saving you the trouble from SSHing, they've implemented a
 KATCP server on the Pi known as
 <a href="https://casper.astro.berkeley.edu/wiki/Tcpborphserver">tcpborphserver</a>. <a href="https://katcp-python.readthedocs.io/en/latest/_downloads/361189acb383a294be20d6c10c257cb4/NRF-KAT7-6.0-IFCE-002-Rev5-1.pdf">KATCP</a>
 is a monitor and control protocol developed by the folks at SARAO that purports easy usage and extension. <a href="https://casper.astro.berkeley.edu/wiki/KATCP">Here</a> is the list of commands they've added, which has not been updated since 2012.</p>
-<p>TODO! Where do we get the magic image? Do we have to configure it?</p>
+<h3 id="pi-networking">Pi Networking</h3>
+<p>The image for the rasperry pi comes from
+<a href="https://casper.astro.berkeley.edu/wiki/SNAP_Bringup#Configuring_a_SNAP_Raspberry_Pi">here</a>.
+Once this image is provisioned, you need to setup static networking as it will
+<em>not</em> get a DHCP address from the server. To do this, hook up the newly
+provisioned pi to a keyboard and monitor (or to a network with DHCP, find it's
+address, and SSH) and edit <code>/etc/dhcpcd.conf</code> to have</p>
+<div class="highlight"><pre><span></span><code>interface eth0
+static ip_address=10.10.1.3/24
+static routers=10.10.1.1
+</code></pre></div>
+<p>Then,</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl restart dhcpcd
+</code></pre></div>
 <h3 id="katcp-networking">KATCP Networking</h3>
 <p>The Pi is (hopefully) configured to speak KATCP on <code>10.10.1.3:7147</code>. You can check this by opening a telnet connection at that address
 and running the <code>?watchdog</code> command. You should receive a <code>!watchdog ok</code>
