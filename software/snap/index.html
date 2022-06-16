@@ -478,8 +478,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pi-networking" class="md-nav__link">
-    Pi Networking
+  <a href="#raspberry-pi-setup" class="md-nav__link">
+    Raspberry Pi Setup
   </a>
   
 </li>
@@ -624,8 +624,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pi-networking" class="md-nav__link">
-    Pi Networking
+  <a href="#raspberry-pi-setup" class="md-nav__link">
+    Raspberry Pi Setup
   </a>
   
 </li>
@@ -701,29 +701,29 @@ documented, so we'll try to make it as painless as possible here.</p>
 <h2 id="katcp-and-the-raspberry-pi">KATCP and the Raspberry Pi</h2>
 <p>The SNAP board itself has no nonvolatile memory, so every time it is
 power-cycled, it must be reconfigured.
-Rather than require the user to bring along (and know how to use) a JTAG programmer, the folks at CASPER
-have added a Raspsberry Pi header such that the GPIO from a Pi can bit-bang JTAG. To expose this functionality
-from remote devices, saving you the trouble from SSHing, they've implemented a
-KATCP server on the Pi known as
-<a href="https://casper.astro.berkeley.edu/wiki/Tcpborphserver">tcpborphserver</a>. The
-current source of tcpborphserver is
-<a href="https://github.com/casper-astro/katcp_devel/tree/rpi-devel-casperfpga">here</a>. <a href="https://katcp-python.readthedocs.io/en/latest/_downloads/361189acb383a294be20d6c10c257cb4/NRF-KAT7-6.0-IFCE-002-Rev5-1.pdf">KATCP</a>
-is a monitor and control protocol developed by the folks at SARAO that purports easy usage and extension. <a href="https://casper.astro.berkeley.edu/wiki/KATCP">Here</a> is the list of commands they've added, which has not been updated since 2012.</p>
-<h3 id="pi-networking">Pi Networking</h3>
+Rather than require the user to bring along (and know how to use) a JTAG
+programmer, the folks at CASPER have added a Raspsberry Pi header such that the
+GPIO from a Pi can bit-bang JTAG. To expose this functionality from remote
+devices, saving you the trouble from SSHing, they've implemented a KATCP
+server on the Pi known as
+<a href="https://casper.astro.berkeley.edu/wiki/Tcpborphserver">tcpborphserver</a>. 
+The current source of tcpborphserver is
+<a href="https://github.com/casper-astro/katcp_devel/tree/rpi-devel-casperfpga">here</a>.
+<a href="https://katcp-python.readthedocs.io/en/latest/_downloads/361189acb383a294be20d6c10c257cb4/NRF-KAT7-6.0-IFCE-002-Rev5-1.pdf">KATCP</a>
+is a monitor and control protocol developed by the folks at SARAO that purports
+easy usage and extension. <a href="https://casper.astro.berkeley.edu/wiki/KATCP">Here</a>
+is the list of commands they've added, which has not been updated since 2012.</p>
+<h3 id="raspberry-pi-setup">Raspberry Pi Setup</h3>
 <p>The image for the rasperry pi comes from
 <a href="https://casper.astro.berkeley.edu/wiki/SNAP_Bringup#Configuring_a_SNAP_Raspberry_Pi">here</a>.
-Once this image is provisioned, you need to setup static networking as it will
-<em>not</em> get a DHCP address from the server. To do this, hook up the newly
-provisioned pi to a keyboard and monitor (or to a network with DHCP, find it's
-address, and SSH) and edit <code>/etc/dhcpcd.conf</code> to have</p>
-<div class="highlight"><pre><span></span><code>interface eth0
-static ip_address=10.10.1.3/24
-static routers=10.10.1.1
-static domain_name_servers=10.10.1.1 1.1.1.1
-</code></pre></div>
-<p>Then,</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl restart dhcpcd
-</code></pre></div>
+As GReX uses the RPi Model 3, grab that image and unzip it. You'll need at least
+a 16 GB SD card to write it to. For some reason it has a few more bytes past a
+standard SD card, so use something like
+<a href="https://github.com/Drewsif/PiShrink">PiShrink</a> to resize the image to its bare
+minimum, then <code>dd</code> that, and hopefully it'll resize on boot.</p>
+<p>By default, this image sets up static networking on <code>192.168.0.2\24</code>, so the
+machine its hooked up to has to talk on that same subnet. This should already be
+done on guix-provisioned GReX machines.</p>
 <h3 id="katcp-networking">KATCP Networking</h3>
 <p>The Pi is (hopefully) configured to speak KATCP on <code>10.10.1.3:7147</code>. You can check this by opening a telnet connection at that address
 and running the <code>?watchdog</code> command. You should receive a <code>!watchdog ok</code>
