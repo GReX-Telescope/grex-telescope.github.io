@@ -422,6 +422,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../stack/" class="md-nav__link">
+        Software Stack
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../gateware/" class="md-nav__link">
         Gateware
       </a>
@@ -506,27 +520,6 @@
         <li class="md-nav__item">
   <a href="#fpga-clocks-references-pps-synthesizers" class="md-nav__link">
     FPGA Clocks, References, PPS, Synthesizers
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adc-configuration" class="md-nav__link">
-    ADC Configuration
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#networking" class="md-nav__link">
-    Networking
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#bringup-verification" class="md-nav__link">
-    Bringup Verification
   </a>
   
 </li>
@@ -656,27 +649,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#adc-configuration" class="md-nav__link">
-    ADC Configuration
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#networking" class="md-nav__link">
-    Networking
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#bringup-verification" class="md-nav__link">
-    Bringup Verification
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -698,6 +670,10 @@ at Berkeley. This board contains the analog to digital converters and Xilinx
 FPGA to perform the digitization and F-engine components of the system.</p>
 <p>The setup and configuration of this board has seemingly never been well
 documented, so we'll try to make it as painless as possible here.</p>
+<p>The FPGA Simulink model is stored
+<a href="https://github.com/GReX-Telescope/gateware">here</a> with the latest releases
+found <a href="https://github.com/GReX-Telescope/gateware/releases">here</a>. Grab the
+latest fpg file, and you're good to go - no reason to recompile it.</p>
 <h2 id="katcp-and-the-raspberry-pi">KATCP and the Raspberry Pi</h2>
 <p>The SNAP board itself has no nonvolatile memory, so every time it is
 power-cycled, it must be reconfigured.
@@ -706,7 +682,7 @@ programmer, the folks at CASPER have added a Raspsberry Pi header such that the
 GPIO from a Pi can bit-bang JTAG. To expose this functionality from remote
 devices, saving you the trouble from SSHing, they've implemented a KATCP
 server on the Pi known as
-<a href="https://casper.astro.berkeley.edu/wiki/Tcpborphserver">tcpborphserver</a>. 
+<a href="https://casper.astro.berkeley.edu/wiki/Tcpborphserver">tcpborphserver</a>.
 The current source of tcpborphserver is
 <a href="https://github.com/casper-astro/katcp_devel/tree/rpi-devel-casperfpga">here</a>.
 <a href="https://katcp-python.readthedocs.io/en/latest/_downloads/361189acb383a294be20d6c10c257cb4/NRF-KAT7-6.0-IFCE-002-Rev5-1.pdf">KATCP</a>
@@ -733,11 +709,11 @@ response.</p>
 from the analog to digital converters (ADCs), run them through a polyphase
 filterbank (PBF) to channelize, and send those channels out over the 10 GbE
 network interface. You would think this would be simple...</p>
-<p>The "code" for the FPGA is stored as a bitstream file (BOF). How these files are
-created is beyond the scope of these docs, but at some point we will provide
-this binary blob. Before anything happens, this blob needs to be uploaded to the
-FPGA. As mentioned before, this is done over katcp.</p>
-<p>TODO! How do we do this? corr? casperfpga? Kiran's new rust tool?</p>
+<p>The "code" for the FPGA is stored as a bitstream binary blob (FPG).
+Before anything happens, this blob needs to be uploaded to the
+FPGA. As mentioned before, this is done over katcp using our snapctl python
+package which utilizes a python3 fork of casperfpga.</p>
+<p>!!! TODO: Add docs on how to run this tool</p>
 <h2 id="fpga-clocks-references-pps-synthesizers">FPGA Clocks, References, PPS, Synthesizers</h2>
 <p>The FPGA needs an external clock source, which is being provided via one of the
 output of the Valon synthesizer in box. Additionally, the board needs "pulse per
@@ -746,14 +722,6 @@ which doesn't have GPS (maybe in a lab during testing), we can override that
 check.</p>
 <p>TODO! Somehow</p>
 <p>TODO! Check clock is good and everything is locked? Does this happen after ADC configuration?</p>
-<h2 id="adc-configuration">ADC Configuration</h2>
-<p>The next step is to set up the ADCs</p>
-<h2 id="networking">Networking</h2>
-<p>After the ADCs are setup, we need to configure the SNAP to start giving us data
-over 10 GbE.</p>
-<p>TODO! How?</p>
-<h2 id="bringup-verification">Bringup Verification</h2>
-<p>TODO! Do we run the test patterns to make sure things are working?</p>
 
               
             </article>

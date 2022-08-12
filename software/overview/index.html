@@ -465,6 +465,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rust" class="md-nav__link">
+    Rust
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#c" class="md-nav__link">
     C++
   </a>
@@ -492,6 +499,20 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stack/" class="md-nav__link">
+        Software Stack
+      </a>
     </li>
   
 
@@ -624,6 +645,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rust" class="md-nav__link">
+    Rust
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#c" class="md-nav__link">
     C++
   </a>
@@ -676,7 +704,7 @@ definition for the entire system. This is to ensure determinisim in builds and
 to reduce the potential of mis-configuration.</p>
 <h2 id="pipeline-overview">Pipeline Overview</h2>
 <pre class="mermaid"><code>flowchart TD
-    A[SNAP] --&gt;|UDP| B[Packet Capture]
+    A[SNAP] --&gt;|UDP| B[Byte Slurper]
     B --&gt;|PSRDADA| C[Heimdall]
     C --&gt;|"?"| D["?"]</code></pre>
 <h2 id="software-manifesto">Software Manifesto</h2>
@@ -686,6 +714,13 @@ to reduce the potential of mis-configuration.</p>
 <li>Code will be version controlled, organized, and public</li>
 </ul>
 <h3 id="language-specific">Language Specific</h3>
+<h4 id="rust">Rust</h4>
+<ul>
+<li>No clippy warnings</li>
+<li>Avoid unsafe</li>
+<li>Document everything</li>
+<li>Formatted with rustfmt</li>
+</ul>
 <h4 id="c">C++</h4>
 <ul>
 <li>Code will be formatted with clang-format's LLVM style</li>
@@ -727,13 +762,13 @@ to reduce the potential of mis-configuration.</p>
       
       
         
-        <a href="../gateware/" class="md-footer__link md-footer__link--next" aria-label="Next: Gateware" rel="next">
+        <a href="../stack/" class="md-footer__link md-footer__link--next" aria-label="Next: Software Stack" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Gateware
+              Software Stack
             </div>
           </div>
           <div class="md-footer__button md-icon">
