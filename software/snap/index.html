@@ -701,7 +701,7 @@ minimum, then <code>dd</code> that, and hopefully it'll resize on boot.</p>
 machine its hooked up to has to talk on that same subnet. This should already be
 done on guix-provisioned GReX machines.</p>
 <h3 id="katcp-networking">KATCP Networking</h3>
-<p>The Pi is (hopefully) configured to speak KATCP on <code>10.10.1.3:7147</code>. You can check this by opening a telnet connection at that address
+<p>The Pi is (hopefully) configured to speak KATCP on <code>192.168.0.2:7147</code>. You can check this by opening a telnet connection at that address
 and running the <code>?watchdog</code> command. You should receive a <code>!watchdog ok</code>
 response.</p>
 <h2 id="programming">Programming</h2>
@@ -709,10 +709,31 @@ response.</p>
 from the analog to digital converters (ADCs), run them through a polyphase
 filterbank (PBF) to channelize, and send those channels out over the 10 GbE
 network interface. You would think this would be simple...</p>
-<p>The "code" for the FPGA is stored as a bitstream binary blob (FPG).
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+The "code" for the FPGA is stored as a bitstream binary blob (FPG).
 Before anything happens, this blob needs to be uploaded to the
 FPGA. As mentioned before, this is done over katcp using our snapctl python
-package which utilizes a python3 fork of casperfpga.</p>
+package which utilizes a python3 fork of casperfpga.
+=======
+The "code" for the FPGA is stored as a bitstream file (FPG). How these files are
+created is beyond the scope of these docs, but at some point we will provide
+this binary blob. Before anything happens, this blob needs to be uploaded to the
+FPGA. As mentioned before, this is done over katcp.</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>3c38fdd (Add more gateware documentation)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <p>!!! TODO: Add docs on how to run this tool</p>
 <h2 id="fpga-clocks-references-pps-synthesizers">FPGA Clocks, References, PPS, Synthesizers</h2>
 <p>The FPGA needs an external clock source, which is being provided via one of the
