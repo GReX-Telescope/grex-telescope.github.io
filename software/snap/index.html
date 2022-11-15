@@ -436,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gateware/" class="md-nav__link">
+      <a href="../gateware.md" class="md-nav__link">
         Gateware
       </a>
     </li>
@@ -484,35 +484,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#katcp-and-the-raspberry-pi" class="md-nav__link">
-    KATCP and the Raspberry Pi
-  </a>
-  
-    <nav class="md-nav" aria-label="KATCP and the Raspberry Pi">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#raspberry-pi-setup" class="md-nav__link">
-    Raspberry Pi Setup
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#katcp-networking" class="md-nav__link">
-    KATCP Networking
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programming" class="md-nav__link">
-    Programming
+  <a href="#tapcp-and-the-raspberry-pi" class="md-nav__link">
+    TAPCP and the Raspberry Pi
   </a>
   
 </li>
@@ -609,35 +582,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#katcp-and-the-raspberry-pi" class="md-nav__link">
-    KATCP and the Raspberry Pi
-  </a>
-  
-    <nav class="md-nav" aria-label="KATCP and the Raspberry Pi">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#raspberry-pi-setup" class="md-nav__link">
-    Raspberry Pi Setup
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#katcp-networking" class="md-nav__link">
-    KATCP Networking
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programming" class="md-nav__link">
-    Programming
+  <a href="#tapcp-and-the-raspberry-pi" class="md-nav__link">
+    TAPCP and the Raspberry Pi
   </a>
   
 </li>
@@ -674,67 +620,16 @@ documented, so we'll try to make it as painless as possible here.</p>
 <a href="https://github.com/GReX-Telescope/gateware">here</a> with the latest releases
 found <a href="https://github.com/GReX-Telescope/gateware/releases">here</a>. Grab the
 latest fpg file, and you're good to go - no reason to recompile it.</p>
-<h2 id="katcp-and-the-raspberry-pi">KATCP and the Raspberry Pi</h2>
-<p>The SNAP board itself has no nonvolatile memory, so every time it is
-power-cycled, it must be reconfigured.
-Rather than require the user to bring along (and know how to use) a JTAG
-programmer, the folks at CASPER have added a Raspsberry Pi header such that the
-GPIO from a Pi can bit-bang JTAG. To expose this functionality from remote
-devices, saving you the trouble from SSHing, they've implemented a KATCP
-server on the Pi known as
-<a href="https://casper.astro.berkeley.edu/wiki/Tcpborphserver">tcpborphserver</a>.
-The current source of tcpborphserver is
-<a href="https://github.com/casper-astro/katcp_devel/tree/rpi-devel-casperfpga">here</a>.
-<a href="https://katcp-python.readthedocs.io/en/latest/_downloads/361189acb383a294be20d6c10c257cb4/NRF-KAT7-6.0-IFCE-002-Rev5-1.pdf">KATCP</a>
-is a monitor and control protocol developed by the folks at SARAO that purports
-easy usage and extension. <a href="https://casper.astro.berkeley.edu/wiki/KATCP">Here</a>
-is the list of commands they've added, which has not been updated since 2012.</p>
-<h3 id="raspberry-pi-setup">Raspberry Pi Setup</h3>
-<p>The image for the rasperry pi comes from
-<a href="https://casper.astro.berkeley.edu/wiki/SNAP_Bringup#Configuring_a_SNAP_Raspberry_Pi">here</a>.
-As GReX uses the RPi Model 3, grab that image and unzip it. You'll need at least
-a 16 GB SD card to write it to. For some reason it has a few more bytes past a
-standard SD card, so use something like
-<a href="https://github.com/Drewsif/PiShrink">PiShrink</a> to resize the image to its bare
-minimum, then <code>dd</code> that, and hopefully it'll resize on boot.</p>
-<p>By default, this image sets up static networking on <code>192.168.0.2\24</code>, so the
-machine its hooked up to has to talk on that same subnet. This should already be
-done on guix-provisioned GReX machines.</p>
-<h3 id="katcp-networking">KATCP Networking</h3>
-<p>The Pi is (hopefully) configured to speak KATCP on <code>192.168.0.2:7147</code>. You can check this by opening a telnet connection at that address
-and running the <code>?watchdog</code> command. You should receive a <code>!watchdog ok</code>
-response.</p>
-<h2 id="programming">Programming</h2>
-<p>The core of the SNAP is the FPGA, whose job in GReX is to grab voltage samples
-from the analog to digital converters (ADCs), run them through a polyphase
-filterbank (PBF) to channelize, and send those channels out over the 10 GbE
-network interface. You would think this would be simple...</p>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-The "code" for the FPGA is stored as a bitstream binary blob (FPG).
-Before anything happens, this blob needs to be uploaded to the
-FPGA. As mentioned before, this is done over katcp using our snapctl python
-package which utilizes a python3 fork of casperfpga.
-=======
-The "code" for the FPGA is stored as a bitstream file (FPG). How these files are
-created is beyond the scope of these docs, but at some point we will provide
-this binary blob. Before anything happens, this blob needs to be uploaded to the
-FPGA. As mentioned before, this is done over katcp.</p>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>3c38fdd (Add more gateware documentation)</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-<p>!!! TODO: Add docs on how to run this tool</p>
+<h2 id="tapcp-and-the-raspberry-pi">TAPCP and the Raspberry Pi</h2>
+<p>The gateware we've built for the SNAP board includes a small CPU called the MicroBlaze
+that hosts a small webserver to deal with runtime interactions with FPGA memory. This server
+gets an IP address from a DHCP server running on the main capture computer. This interface can also
+be used to reprogram the SNAP if the gateware changes. By deafult, we'll ship SNAP boards that
+have the GReX gateware preprogramed, but it's always possible to reprogram it.</p>
+<p>This interface is over the UDP protocol TFTP, where the folks at CASPER have wrapped reading and
+writing files as the interaction to both the flash and FPU memory. We've written a wrapper to the
+so called "TAPCP" protocol <a href="https://github.com/kiranshila/tapcp_rs">here</a>. It is with this library
+that the packet capture code informs the SNAP when to activate timing signals.</p>
 <h2 id="fpga-clocks-references-pps-synthesizers">FPGA Clocks, References, PPS, Synthesizers</h2>
 <p>The FPGA needs an external clock source, which is being provided via one of the
 output of the Valon synthesizer in box. Additionally, the board needs "pulse per
@@ -756,7 +651,7 @@ check.</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../gateware/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Gateware" rel="prev">
+        <a href="../stack/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Software Stack" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -765,7 +660,7 @@ check.</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Gateware
+              Software Stack
             </div>
           </div>
         </a>

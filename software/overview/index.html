@@ -524,7 +524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gateware/" class="md-nav__link">
+      <a href="../gateware.md" class="md-nav__link">
         Gateware
       </a>
     </li>
@@ -701,8 +701,9 @@ to reduce the potential of mis-configuration.</p>
 <h2 id="pipeline-overview">Pipeline Overview</h2>
 <pre class="mermaid"><code>flowchart TD
     A[SNAP] --&gt;|UDP| B[Byte Slurper]
-    B --&gt;|PSRDADA| C[Heimdall]
-    C --&gt;|"?"| D["?"]</code></pre>
+    B --&gt;|PSRDADA| C[RFI Cleaning]
+    C --&gt;|PSRDADA| D[Heimdall]
+    D --&gt;|Sockets| E[T2]</code></pre>
 <h2 id="software-manifesto">Software Manifesto</h2>
 <p>To limit downtime and maximize reproducability, we will try to adopt a consistent software development strategy. Primarily:</p>
 <ul>
