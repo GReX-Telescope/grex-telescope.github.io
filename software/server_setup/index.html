@@ -181,13 +181,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../overview/" class="md-tabs__link">
+      <a href="../overview/" class="md-tabs__link md-tabs__link--active">
         Software
       </a>
     </li>
@@ -376,12 +378,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -482,6 +486,150 @@
 
             
           
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Server Setup
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Server Setup
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hardware-setup" class="md-nav__link">
+    Hardware Setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#initial-os-setup" class="md-nav__link">
+    Initial OS Setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#networking" class="md-nav__link">
+    Networking
+  </a>
+  
+    <nav class="md-nav" aria-label="Networking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netplan" class="md-nav__link">
+    Netplan
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dhcp-server" class="md-nav__link">
+    DHCP Server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-10-gbe-settings" class="md-nav__link">
+    Advanced 10 GbE Settings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guix" class="md-nav__link">
+    Guix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rust" class="md-nav__link">
+    Rust
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-software" class="md-nav__link">
+    Pipeline Software
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Software">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-t0" class="md-nav__link">
+    Build T0
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prometheus" class="md-nav__link">
+    Prometheus
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -537,8 +685,90 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#software-setup" class="md-nav__link">
-    Software Setup
+  <a href="#initial-os-setup" class="md-nav__link">
+    Initial OS Setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#networking" class="md-nav__link">
+    Networking
+  </a>
+  
+    <nav class="md-nav" aria-label="Networking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netplan" class="md-nav__link">
+    Netplan
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dhcp-server" class="md-nav__link">
+    DHCP Server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-10-gbe-settings" class="md-nav__link">
+    Advanced 10 GbE Settings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guix" class="md-nav__link">
+    Guix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rust" class="md-nav__link">
+    Rust
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-software" class="md-nav__link">
+    Pipeline Software
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Software">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-t0" class="md-nav__link">
+    Build T0
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prometheus" class="md-nav__link">
+    Prometheus
   </a>
   
 </li>
@@ -572,7 +802,302 @@
 </ol>
 <p>FIXME: Image</p>
 <p>Finally, we need to hook up a monitor to the 3090 Ti so we can setup the software</p>
-<h2 id="software-setup">Software Setup</h2>
+<h2 id="initial-os-setup">Initial OS Setup</h2>
+<p>On boot, you will be presented with the Ubuntu graphical interface. If a password is requested, the deafult is provided in the information booklet that came with the hardware.</p>
+<p>First, we will change the system password. Set this to something memorable.</p>
+<div class="highlight"><pre><span></span><code>passwd <span class="k">$(</span>whoami<span class="k">)</span>
+</code></pre></div>
+<p>Now, we will update the system. There shouldn't be many updates if this is a new machine.</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get update
+sudo apt-get upgrade -y
+</code></pre></div>
+<p>We will be editing a bunch of files, if you are comfy in the command line, you probably want to install some editors. Otherwise the graphical <code>gedit</code> tool will be fine.</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install emacs vim -y
+</code></pre></div>
+<p>Finally, we will set the hostname. We'll be using the <code>grex-&lt;affiliation&gt;-&lt;location&gt;</code> paradigm (just for clarity, no real reason not to). As in, the first server that is managed by Caltech at OVRO will be <code>grex-caltech-ovro</code>.</p>
+<div class="highlight"><pre><span></span><code>sudo hostnamectl set-hostname &lt;your-hostname&gt;
+</code></pre></div>
+<p>Some updates may require a reboot. If it asks, do that now.</p>
+<h2 id="networking">Networking</h2>
+<p>Now, we need to setup the networking for the GReX system. We will operate under the assumption that the internet-facing connection will get an IP address from a DHCP server. If that is not the case, consult whoever runs your network on the appropriate setup. Regardless of the WAN connection, the 10 GbE fiber connection to the GReX terminal will be configured the same.</p>
+<h3 id="overview">Overview</h3>
+<p>The 10 GbE fiber port serves a few purposes. It is the main data transfer link between the FPGA in the field and the server, but it also carries the monitor and control for the box. This monitor and control connection includes the SNAP control connection and the Raspberry Pi. Both of these devices require an external DHCP server, which we have to provide on this port. Additionally, the 10 GbE switch in the box has its own default subnet for configuration (<code>192.168.88.X</code>). To make everything talk to each other, we need to add two IPs on this port: one in the subnet of the switch's config interface, and the other for DHCP of the various devices.</p>
+<h3 id="netplan">Netplan</h3>
+<p>In <code>/etc/netplan</code> remove any files that are currently there.</p>
+<p>Then, create a new file called <code>config.yaml</code> with the following contents</p>
+<div class="highlight"><pre><span></span><code><span class="nt">network</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">    </span><span class="nt">renderer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networkd</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ethernets</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="c1"># Two WAN interfaces. Configure this according to your network setup</span><span class="w"></span>
+<span class="w">        </span><span class="nt">enp36s0f0</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">enp36s0f1</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="c1"># 10 GbE connection over fiber to the box</span><span class="w"></span>
+<span class="w">        </span><span class="nt">enp1s0f0</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">mtu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9000</span><span class="w"></span>
+<span class="w">            </span><span class="nt">addresses</span><span class="p">:</span><span class="w"></span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.1/24</span><span class="w"></span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.88.2/24</span><span class="w"></span>
+</code></pre></div>
+<p>Then apply with</p>
+<div class="highlight"><pre><span></span><code>sudo netplan apply
+</code></pre></div>
+<h3 id="dhcp-server">DHCP Server</h3>
+<p>Now, we need to setup the DHCP server on the 10 GbE port. First, we install the DHCP server software:</p>
+<p>Setup the repository that includes kea</p>
+<div class="highlight"><pre><span></span><code>curl -1sLf <span class="se">\</span>
+  <span class="s1">&#39;https://dl.cloudsmith.io/public/isc/kea-2-3/setup.deb.sh&#39;</span> <span class="se">\</span>
+  <span class="p">|</span> sudo -E bash
+</code></pre></div>
+<p>Then install with 
+<div class="highlight"><pre><span></span><code>sudo apt-get install isc-kea-dhcp4
+</code></pre></div></p>
+<p>Now, remove the example file:</p>
+<div class="highlight"><pre><span></span><code>sudo rm /etc/kea/kea-dhcp4.conf
+</code></pre></div>
+<p>And replace it with a file called <code>kea-dhcp4.conf</code> with the following contents</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;Dhcp4&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;interfaces-config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;interfaces&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;enp1s0f0&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">],</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;service-sockets-max-retries&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;service-sockets-retry-wait-time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;lease-database&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;memfile&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;persist&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/lib/kea/kea-leases4.csv&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;lfc-interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3600</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;renew-timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15840</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;rebind-timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">27720</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;valid-lifetime&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">31680</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;subnet4&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;subnet&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.0/24&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;pools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.2 - 192.168.0.100&quot;</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="p">],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;option-data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;routers&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.1&quot;</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Finally enable the DHCP server service</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> isc-kea-dhcp4-server
+</code></pre></div>
+<p>And check the status to make sure everything came up ok</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl status isc-kea-dhcp4-server
+</code></pre></div>
+<p>Finally,</p>
+<div class="highlight"><pre><span></span><code>sudo reboot
+</code></pre></div>
+<p>After reboot, assuming your fiber line is plugged into the box, run</p>
+<div class="highlight"><pre><span></span><code>cat /var/lib/kea/kea-leases4.csv
+</code></pre></div>
+<p>You should see the raspberry pi.</p>
+<h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
+<p>Unfortunatley, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
+<p>Add the following to <code>/etc/sysctl.conf</code>
+eth
+<div class="highlight"><pre><span></span><code>kernel.shmmax = 68719476736
+kernel.shmall = 4294967296
+net.core.rmem_max = 536870912
+net.core.wmem_max = 536870912
+net.core.netdev_max_backlog = 416384
+net.core.optmem_max = 16777216
+net.ipv4.udp_mem = 11416320 15221760 22832640
+net.core.netdev_budget = 1024
+net.ipv4.tcp_timestamps = 0
+net.ipv4.tcp_sack = 0
+net.ipv4.tcp_low_latency = 1
+vm.swappiness=1
+</code></pre></div></p>
+<p>Then apply these changes with </p>
+<div class="highlight"><pre><span></span><code>sudo sysctl --system
+</code></pre></div>
+<p>Now, we need a program called <code>ethtool</code> to apply some more settings</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install ethtool -y
+</code></pre></div>
+<p>Now we will create a file to run on boot to apply a sequence of ethtool settings.</p>
+<p>Create the file <code>/etc/rc.local</code> with the following contents:</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/env bash</span>
+ethtool -G enp1s0f0 rx <span class="m">4096</span> tx <span class="m">4096</span>
+ethtool -A enp1s0f0 rx on
+ethtool -A enp1s0f0 tx on
+</code></pre></div>
+<p>Make this file executable with</p>
+<div class="highlight"><pre><span></span><code>sudo chmod +x /etc/rc.local
+</code></pre></div>
+<p>Then enable the <code>rc-local</code> service</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> rc-local
+</code></pre></div>
+<p>Now create the file <code>/etc/systemd/system/rc-local.service</code> with the following contents:</p>
+<div class="highlight"><pre><span></span><code>[Unit]
+ Description=/etc/rc.local Compatibility
+ ConditionPathExists=/etc/rc.local
+
+[Service]
+ Type=forking
+ ExecStart=/etc/rc.local start
+ TimeoutSec=0
+ StandardOutput=tty
+ RemainAfterExit=yes
+ SysVStartPriority=99
+
+[Install]
+ WantedBy=multi-user.target
+</code></pre></div>
+<p>Finally, reboot</p>
+<h2 id="guix">Guix</h2>
+<p>We use the deterministic pacakge manager Guix to deal with the more tricky to install things, so we never have to worry about stuff not building.</p>
+<p>You can install this with the Ubuntu package manager</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install guix
+</code></pre></div>
+<p>Then, we will add the repository of our pacakges by creating the following file <code>~/.config/guix/channels.scm</code></p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">channel</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nf">name</span><span class="w"> </span><span class="ss">&#39;guix-grex</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nf">url</span><span class="w"> </span><span class="s">&quot;https://github.com/GReX-Telescope/guix-grex.git&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nf">branch</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">      </span><span class="nv">%default-channels</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<p>And then have it self-update with</p>
+<div class="highlight"><pre><span></span><code>guix pull
+</code></pre></div>
+<p>This step may take a while.</p>
+<p>Create (or add to) <code>~/.bash_profile</code> </p>
+<div class="highlight"><pre><span></span><code><span class="nv">GUIX_PROFILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.guix-profile&quot;</span>
+. <span class="s2">&quot;</span><span class="nv">$GUIX_PROFILE</span><span class="s2">/etc/profile&quot;</span>
+</code></pre></div>
+<p>Finally, install the pipeline dependencies with:</p>
+<div class="highlight"><pre><span></span><code>guix install psrdada snap_bringup heimdall-astro
+</code></pre></div>
+<h2 id="rust">Rust</h2>
+<p>Many parts of the pipeline software are written in the Rust programming language.
+We will build be building this software from scratch, so we need to install the rust compiler and it's tooling.
+This is easy enough with <a href="https://rustup.rs/">rustup</a></p>
+<p>We need curl for the rustup installer, so</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install curl -y
+</code></pre></div>
+<p>Then run the installer, using all the default settings</p>
+<div class="highlight"><pre><span></span><code>curl --proto <span class="s1">&#39;=https&#39;</span> --tlsv1.2 -sSf https://sh.rustup.rs <span class="p">|</span> sh
+</code></pre></div>
+<h2 id="pipeline-software">Pipeline Software</h2>
+<p>To organize all the software needed for running the whole pipeline, make a new directory wherever you want (say, the home directory?) called <code>grex</code></p>
+<div class="highlight"><pre><span></span><code>mkdir <span class="nv">$HOME</span>/grex
+</code></pre></div>
+<p>Then, move to this directory and clone the software</p>
+<div class="highlight"><pre><span></span><code>cd $HOME/grex
+git clone https://github.com/GReX-Telescope/Pipeline pipeline
+git clone https://github.com/GReX-Telescope/GReX-T0 t0
+</code></pre></div>
+<h3 id="build-t0">Build T0</h3>
+<p>As T0 is bare rust source code, we need to compile it.
+This links against a few required binaries, so we'll install those:</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install libhdf5-dev clang parallel -y
+</code></pre></div>
+<p><code>cd</code> into the <code>t0</code> folder we just created and run:</p>
+<div class="highlight"><pre><span></span><code>cargo build --release
+</code></pre></div>
+<h2 id="prometheus">Prometheus</h2>
+<p>To save data about the server (CPU usage, RAM usage, etc) and to collect monitoring metrics from various pieces of pipeline software, we use the <a href="https://prometheus.io/">prometheus</a> time series database. Each server will host its own database and <em>push</em> updates to the monitoring frontend Grafana.</p>
+<p>First, create a new group and user</p>
+<div class="highlight"><pre><span></span><code>sudo groupadd --system prometheus
+sudo useradd -s /sbin/nologin --system -g prometheus prometheus
+</code></pre></div>
+<p>Next, we create the path for the database. Puget setup the system so the large storage drive is mounted at <code>/hdd</code>. We will keep the database there.</p>
+<div class="highlight"><pre><span></span><code>sudo mkdir /hdd/prometheus
+</code></pre></div>
+<p>Prometheus primary configuration files directory is /etc/prometheus/. It will have some sub-directories:</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> i <span class="k">in</span> rules rules.d files_sd<span class="p">;</span> <span class="k">do</span> sudo mkdir -p /etc/prometheus/<span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="k">done</span>
+</code></pre></div>
+<p>Next, get a copy of the prometheus binaries, extract, and move into that dir</p>
+<div class="highlight"><pre><span></span><code>mkdir -p /tmp/prometheus <span class="o">&amp;&amp;</span> <span class="nb">cd</span> /tmp/prometheus
+curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest <span class="p">|</span> grep browser_download_url <span class="p">|</span> grep linux-amd64 <span class="p">|</span> cut -d <span class="s1">&#39;&quot;&#39;</span> -f <span class="m">4</span> <span class="p">|</span> wget -qi -
+tar xvf prometheus*.tar.gz
+<span class="nb">cd</span> prometheus*/
+</code></pre></div>
+<p>Install the files by moving to <code>/usr/local/bin</code></p>
+<div class="highlight"><pre><span></span><code>sudo mv prometheus promtool /usr/local/bin/
+</code></pre></div>
+<p>Move Prometheus configuration files to <code>etc</code></p>
+<div class="highlight"><pre><span></span><code>sudo mv prometheus.yml /etc/prometheus/prometheus.yml
+sudo mv consoles/ console_libraries/ /etc/prometheus/
+</code></pre></div>
+<p>Now, we configure. Open up <code>/etc/prometheus/prometheus.yml</code> and edit to contain:</p>
+<div class="highlight"><pre><span></span><code>global:
+    scrape_interval: 10s
+    evaluation_interval: 10s
+scrape_configs:
+    - job_name: &quot;prometheus&quot;
+      static_configs:
+      - targets: [&quot;localhost:9090&quot;, &quot;localhost:9100&quot;, &quot;localhost:8083&quot;]
+remote_write:
+    - url: &lt;grafana-url&gt;
+      basic_auth: 
+        username: &lt;grafana username&gt;
+        password: &lt;grafana api key&gt;
+</code></pre></div>
+<p>If you are hooking up to our grafana instance, you will get an API key from the project, otherwise you'd create a <code>remote_write</code> section that reflects your monitoring stack.</p>
+<p>Now, create a systemd unit to run the database in the file <code>/etc/systemd/system/prometheus.service</code></p>
+<div class="highlight"><pre><span></span><code>[Unit]
+Description=Prometheus
+Documentation=https://prometheus.io/docs/introduction/overview/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecReload=/bin/kill -HUP \$MAINPID
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/hdd/prometheus \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries \
+  --web.listen-address=0.0.0.0:9090 \
+  --web.external-url=
+
+SyslogIdentifier=prometheus
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+</code></pre></div>
+<p>Now update all the permissions of the things we've mucked with to make sure prometheus can use them</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> i <span class="k">in</span> rules rules.d files_sd<span class="p">;</span> <span class="k">do</span> sudo chown -R prometheus:prometheus /etc/prometheus/<span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="k">done</span>
+<span class="k">for</span> i <span class="k">in</span> rules rules.d files_sd<span class="p">;</span> <span class="k">do</span> sudo chmod -R <span class="m">775</span> /etc/prometheus/<span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="k">done</span>
+sudo chown -R prometheus:prometheus /hdd/prometheus/
+</code></pre></div>
+<p>Finally, reload systemd and start the service</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl daemon-reload
+sudo systemctl start prometheus
+sudo systemctl <span class="nb">enable</span> prometheus
+</code></pre></div>
+<p>Now we will install the node-exporter, which gives us metrics of the computer itself.</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install prometheus-node-exporter
+</code></pre></div>
+<h1 id="turning-on-the-snap">Turning on the SNAP</h1>
+<p>SSH into the Pi (password is raspberry) via</p>
+<div class="highlight"><pre><span></span><code>ssh pi@&lt;the ip from dhcp-lease-list&gt;
+</code></pre></div>
+<p>Then on the pi, run</p>
+<div class="highlight"><pre><span></span><code>python3 pwup_snap.py
+</code></pre></div>
+<p>There also exists <code>pwdn_snap.py</code>, with an obvious purpose.</p>
 
               
             </article>
@@ -582,6 +1107,41 @@
       </main>
       
         <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../pipeline/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Pipeline" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Pipeline
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../about/" class="md-footer__link md-footer__link--next" aria-label="Next: About" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              About
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
