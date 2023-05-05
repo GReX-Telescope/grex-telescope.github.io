@@ -540,6 +540,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graphics-drivers" class="md-nav__link">
+    Graphics Drivers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#networking" class="md-nav__link">
     Networking
   </a>
@@ -692,6 +699,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graphics-drivers" class="md-nav__link">
+    Graphics Drivers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#networking" class="md-nav__link">
     Networking
   </a>
@@ -818,6 +832,43 @@ sudo apt-get upgrade -y
 <div class="highlight"><pre><span></span><code>sudo hostnamectl set-hostname &lt;your-hostname&gt;
 </code></pre></div>
 <p>Some updates may require a reboot. If it asks, do that now.</p>
+<h2 id="graphics-drivers">Graphics Drivers</h2>
+<p>Puget ships with the NVIDIA drivers preinstalled (as it came with the T1000 card), but the version of CUDA may be out of date (as it was for us).
+To fix this, we're going to purge the system of NVIDIA stuff, add the official upstream NVIDIA package source, and build from there.</p>
+<p>First, let's get rid of all the existing NVIDIA stuff.</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get purge nvidia*
+sudo apt remove nvidia-*
+sudo rm /etc/apt/sources.list.d/cuda*
+sudo apt-get autoremove <span class="o">&amp;&amp;</span> sudo apt-get autoclean
+sudo rm -rf /usr/local/cuda*
+</code></pre></div>
+<p>Now we'll do an update</p>
+<div class="highlight"><pre><span></span><code>sudo apt update
+sudo apt upgrade
+</code></pre></div>
+<p>And then install the NVIDIA repository</p>
+<div class="highlight"><pre><span></span><code>sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt update
+</code></pre></div>
+<p>Next, we'll install the NVIDIA driver (515, unless anyone wants to update)
+<div class="highlight"><pre><span></span><code>sudo apt install libnvidia-common-515
+sudo apt install libnvidia-gl-515
+sudo apt install nvidia-driver-515
+</code></pre></div></p>
+<p>CUDA gets a little tricky, as we have to source the repo a bit more manually.</p>
+<div class="highlight"><pre><span></span><code>wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
+sudo add-apt-repository <span class="s2">&quot;deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /&quot;</span>
+sudo apt-get update
+sudo apt install cuda-11-7 
+</code></pre></div>
+<p>Finally, we will fixup our paths for linking when we build stuff with CUDA.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s1">&#39;export PATH=/usr/local/cuda-11.7/bin:$PATH&#39;</span> &gt;&gt; ~/.bashrc
+<span class="nb">echo</span> <span class="s1">&#39;export LD_LIBRARY_PATH=/usr/local/cuda-11.7/lib64:$LD_LIBRARY_PATH&#39;</span> &gt;&gt; ~/.bashrc
+<span class="nb">source</span> ~/.bashrc
+sudo ldconfig
+</code></pre></div>
 <h2 id="networking">Networking</h2>
 <p>Now, we need to setup the networking for the GReX system. We will operate under the assumption that the internet-facing connection will get an IP address from a DHCP server. If that is not the case, consult whoever runs your network on the appropriate setup. Regardless of the WAN connection, the 10 GbE fiber connection to the GReX terminal will be configured the same.</p>
 <h3 id="overview">Overview</h3>
