@@ -602,6 +602,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    Python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pipeline-software" class="md-nav__link">
     Pipeline Software
   </a>
@@ -610,8 +617,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#build-t0" class="md-nav__link">
-    Build T0
+  <a href="#t0" class="md-nav__link">
+    T0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t2" class="md-nav__link">
+    T2
   </a>
   
 </li>
@@ -761,6 +775,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    Python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pipeline-software" class="md-nav__link">
     Pipeline Software
   </a>
@@ -769,8 +790,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#build-t0" class="md-nav__link">
-    Build T0
+  <a href="#t0" class="md-nav__link">
+    T0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t2" class="md-nav__link">
+    T2
   </a>
   
 </li>
@@ -828,7 +856,8 @@ sudo apt-get upgrade -y
 <p>We will be editing a bunch of files, if you are comfy in the command line, you probably want to install some editors. Otherwise the graphical <code>gedit</code> tool will be fine.</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install emacs vim -y
 </code></pre></div>
-<p>Finally, we will set the hostname. We'll be using the <code>grex-&lt;affiliation&gt;-&lt;location&gt;</code> paradigm (just for clarity, no real reason not to). As in, the first server that is managed by Caltech at OVRO will be <code>grex-caltech-ovro</code>.</p>
+<p>Finally, we will set the hostname. We'll be using the <code>grex-&lt;affiliation&gt;-&lt;location&gt;</code> paradigm (just for clarity, no real reason not to).
+As in, the first server that is managed by Caltech at OVRO will be <code>grex-caltech-ovro</code>.</p>
 <div class="highlight"><pre><span></span><code>sudo hostnamectl set-hostname &lt;your-hostname&gt;
 </code></pre></div>
 <p>Some updates may require a reboot. If it asks, do that now.</p>
@@ -961,8 +990,7 @@ sudo ldconfig
 <p>You should see the raspberry pi.</p>
 <h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
 <p>Unfortunatley, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
-<p>Add the following to <code>/etc/sysctl.conf</code>
-eth
+<p>Add the following to <code>/etc/sysctl.conf</code></p>
 <div class="highlight"><pre><span></span><code>kernel.shmmax = 68719476736
 kernel.shmall = 4294967296
 net.core.rmem_max = 536870912
@@ -975,7 +1003,7 @@ net.ipv4.tcp_timestamps = 0
 net.ipv4.tcp_sack = 0
 net.ipv4.tcp_low_latency = 1
 vm.swappiness=1
-</code></pre></div></p>
+</code></pre></div>
 <p>Then apply these changes with </p>
 <div class="highlight"><pre><span></span><code>sudo sysctl --system
 </code></pre></div>
@@ -996,20 +1024,20 @@ ethtool -A enp1s0f0 tx on
 <div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> rc-local
 </code></pre></div>
 <p>Now create the file <code>/etc/systemd/system/rc-local.service</code> with the following contents:</p>
-<div class="highlight"><pre><span></span><code>[Unit]
- Description=/etc/rc.local Compatibility
- ConditionPathExists=/etc/rc.local
+<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span><span class="w"></span>
+<span class="w"> </span><span class="na">Description</span><span class="o">=</span><span class="s">/etc/rc.local Compatibility</span><span class="w"></span>
+<span class="w"> </span><span class="na">ConditionPathExists</span><span class="o">=</span><span class="s">/etc/rc.local</span><span class="w"></span>
 
-[Service]
- Type=forking
- ExecStart=/etc/rc.local start
- TimeoutSec=0
- StandardOutput=tty
- RemainAfterExit=yes
- SysVStartPriority=99
+<span class="k">[Service]</span><span class="w"></span>
+<span class="w"> </span><span class="na">Type</span><span class="o">=</span><span class="s">forking</span><span class="w"></span>
+<span class="w"> </span><span class="na">ExecStart</span><span class="o">=</span><span class="s">/etc/rc.local start</span><span class="w"></span>
+<span class="w"> </span><span class="na">TimeoutSec</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
+<span class="w"> </span><span class="na">StandardOutput</span><span class="o">=</span><span class="s">tty</span><span class="w"></span>
+<span class="w"> </span><span class="na">RemainAfterExit</span><span class="o">=</span><span class="s">yes</span><span class="w"></span>
+<span class="w"> </span><span class="na">SysVStartPriority</span><span class="o">=</span><span class="s">99</span><span class="w"></span>
 
-[Install]
- WantedBy=multi-user.target
+<span class="k">[Install]</span><span class="w"></span>
+<span class="w"> </span><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span><span class="w"></span>
 </code></pre></div>
 <p>Finally, reboot</p>
 <h2 id="guix">Guix</h2>
@@ -1018,10 +1046,10 @@ ethtool -A enp1s0f0 tx on
 <div class="highlight"><pre><span></span><code>sudo apt-get install guix
 </code></pre></div>
 <p>Then, we will add the repository of our pacakges by creating the following file <code>~/.config/guix/channels.scm</code></p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">channel</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nf">name</span><span class="w"> </span><span class="ss">&#39;guix-grex</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nf">url</span><span class="w"> </span><span class="s">&quot;https://github.com/GReX-Telescope/guix-grex.git&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nf">branch</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">))</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nv">channel</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nv">name</span><span class="w"> </span><span class="ss">&#39;guix-grex</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nv">url</span><span class="w"> </span><span class="s">&quot;https://github.com/GReX-Telescope/guix-grex.git&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">(</span><span class="nv">branch</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">))</span><span class="w"></span>
 <span class="w">      </span><span class="nv">%default-channels</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 <p>And then have it self-update with</p>
@@ -1031,7 +1059,11 @@ ethtool -A enp1s0f0 tx on
 <p>Create (or add to) <code>~/.bash_profile</code> </p>
 <div class="highlight"><pre><span></span><code><span class="nv">GUIX_PROFILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.guix-profile&quot;</span>
 . <span class="s2">&quot;</span><span class="nv">$GUIX_PROFILE</span><span class="s2">/etc/profile&quot;</span>
+<span class="k">if</span> <span class="o">[</span> -f ~/.bashrc <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">source</span> ~/.bashrc
+<span class="k">fi</span>
 </code></pre></div>
+<p>In here, we're also souring <code>~/.bashrc</code> so we get it over ssh.</p>
 <p>Finally, install the pipeline dependencies with:</p>
 <div class="highlight"><pre><span></span><code>guix install psrdada snap_bringup heimdall-astro
 </code></pre></div>
@@ -1045,22 +1077,37 @@ This is easy enough with <a href="https://rustup.rs/">rustup</a></p>
 <p>Then run the installer, using all the default settings</p>
 <div class="highlight"><pre><span></span><code>curl --proto <span class="s1">&#39;=https&#39;</span> --tlsv1.2 -sSf https://sh.rustup.rs <span class="p">|</span> sh
 </code></pre></div>
+<h2 id="python">Python</h2>
+<p>To get out of version hell for python stuff <em>not</em> packaged with guix, we're using <a href="https://python-poetry.org/">Poetry</a>. To install it, we will:</p>
+<div class="highlight"><pre><span></span><code>curl -sSL https://install.python-poetry.org <span class="p">|</span> python3 -
+</code></pre></div>
+<p>We need to make a few adjustments to <code>~/.bashrc</code> to correct the paths and fix a bug. Append the following to the end.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;/home/user/.local/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+<span class="c1"># Fix the &quot;Poetry: Failed to unlock the collection&quot; issue</span>
+<span class="nb">export</span> <span class="nv">PYTHON_KEYRING_BACKEND</span><span class="o">=</span>keyring.backends.null.Keyring
+</code></pre></div>
+<p>Go ahead and <code>source ~/.bashrc</code> now to get these changes in your shell.</p>
 <h2 id="pipeline-software">Pipeline Software</h2>
 <p>To organize all the software needed for running the whole pipeline, make a new directory wherever you want (say, the home directory?) called <code>grex</code></p>
 <div class="highlight"><pre><span></span><code>mkdir <span class="nv">$HOME</span>/grex
 </code></pre></div>
 <p>Then, move to this directory and clone the software</p>
-<div class="highlight"><pre><span></span><code>cd $HOME/grex
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> <span class="nv">$HOME</span>/grex
 git clone https://github.com/GReX-Telescope/Pipeline pipeline
 git clone https://github.com/GReX-Telescope/GReX-T0 t0
+git clone https://github.com/GReX-Telescope/GReX-T2 t2
 </code></pre></div>
-<h3 id="build-t0">Build T0</h3>
+<h3 id="t0">T0</h3>
 <p>As T0 is bare rust source code, we need to compile it.
 This links against a few required binaries, so we'll install those:</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install libhdf5-dev clang parallel -y
 </code></pre></div>
 <p><code>cd</code> into the <code>t0</code> folder we just created and run:</p>
 <div class="highlight"><pre><span></span><code>cargo build --release
+</code></pre></div>
+<h3 id="t2">T2</h3>
+<p>T2 is a python project, built with poetry. To set it up we will <code>cd</code> into the <code>t2</code> folder and run:</p>
+<div class="highlight"><pre><span></span><code>poetry install
 </code></pre></div>
 <h2 id="prometheus">Prometheus</h2>
 <p>To save data about the server (CPU usage, RAM usage, etc) and to collect monitoring metrics from various pieces of pipeline software, we use the <a href="https://prometheus.io/">prometheus</a> time series database. Each server will host its own database and <em>push</em> updates to the monitoring frontend Grafana.</p>
@@ -1103,30 +1150,30 @@ remote_write:
 </code></pre></div>
 <p>If you are hooking up to our grafana instance, you will get an API key from the project, otherwise you'd create a <code>remote_write</code> section that reflects your monitoring stack.</p>
 <p>Now, create a systemd unit to run the database in the file <code>/etc/systemd/system/prometheus.service</code></p>
-<div class="highlight"><pre><span></span><code>[Unit]
-Description=Prometheus
-Documentation=https://prometheus.io/docs/introduction/overview/
-Wants=network-online.target
-After=network-online.target
+<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span><span class="w"></span>
+<span class="na">Description</span><span class="o">=</span><span class="s">Prometheus</span><span class="w"></span>
+<span class="na">Documentation</span><span class="o">=</span><span class="s">https://prometheus.io/docs/introduction/overview/</span><span class="w"></span>
+<span class="na">Wants</span><span class="o">=</span><span class="s">network-online.target</span><span class="w"></span>
+<span class="na">After</span><span class="o">=</span><span class="s">network-online.target</span><span class="w"></span>
 
-[Service]
-Type=simple
-User=prometheus
-Group=prometheus
-ExecReload=/bin/kill -HUP \$MAINPID
-ExecStart=/usr/local/bin/prometheus \
-  --config.file=/etc/prometheus/prometheus.yml \
-  --storage.tsdb.path=/hdd/prometheus \
-  --web.console.templates=/etc/prometheus/consoles \
-  --web.console.libraries=/etc/prometheus/console_libraries \
-  --web.listen-address=0.0.0.0:9090 \
-  --web.external-url=
+<span class="k">[Service]</span><span class="w"></span>
+<span class="na">Type</span><span class="o">=</span><span class="s">simple</span><span class="w"></span>
+<span class="na">User</span><span class="o">=</span><span class="s">prometheus</span><span class="w"></span>
+<span class="na">Group</span><span class="o">=</span><span class="s">prometheus</span><span class="w"></span>
+<span class="na">ExecReload</span><span class="o">=</span><span class="s">/bin/kill -HUP \$MAINPID</span><span class="w"></span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/local/bin/prometheus \</span><span class="w"></span>
+<span class="w">  </span><span class="na">--config.file</span><span class="o">=</span><span class="s">/etc/prometheus/prometheus.yml \</span><span class="w"></span>
+<span class="w">  </span><span class="na">--storage.tsdb.path</span><span class="o">=</span><span class="s">/hdd/prometheus \</span><span class="w"></span>
+<span class="w">  </span><span class="na">--web.console.templates</span><span class="o">=</span><span class="s">/etc/prometheus/consoles \</span><span class="w"></span>
+<span class="w">  </span><span class="na">--web.console.libraries</span><span class="o">=</span><span class="s">/etc/prometheus/console_libraries \</span><span class="w"></span>
+<span class="w">  </span><span class="na">--web.listen-address</span><span class="o">=</span><span class="s">0.0.0.0:9090 \</span><span class="w"></span>
+<span class="w">  </span><span class="na">--web.external-url</span><span class="o">=</span><span class="w"></span>
 
-SyslogIdentifier=prometheus
-Restart=always
+<span class="na">SyslogIdentifier</span><span class="o">=</span><span class="s">prometheus</span><span class="w"></span>
+<span class="na">Restart</span><span class="o">=</span><span class="s">always</span><span class="w"></span>
 
-[Install]
-WantedBy=multi-user.target
+<span class="k">[Install]</span><span class="w"></span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span><span class="w"></span>
 </code></pre></div>
 <p>Now update all the permissions of the things we've mucked with to make sure prometheus can use them</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span> i <span class="k">in</span> rules rules.d files_sd<span class="p">;</span> <span class="k">do</span> sudo chown -R prometheus:prometheus /etc/prometheus/<span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="k">done</span>
