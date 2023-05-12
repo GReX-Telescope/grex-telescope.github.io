@@ -1196,6 +1196,26 @@ sudo systemctl <span class="nb">enable</span> prometheus
 <div class="highlight"><pre><span></span><code>python3 pwup_snap.py
 </code></pre></div>
 <p>There also exists <code>pwdn_snap.py</code>, with an obvious purpose.</p>
+<h1 id="preconfigured">Preconfigured</h1>
+<p>These steps should already be performed before we ship a box, but for completeness, here are the steps.</p>
+<h2 id="valon">Valon</h2>
+<p>We need to configure the valon synthesizer to act as the LO for the downconverter and the reference clock for the SNAP ADC.</p>
+<p>Use the GUI tool <a href="https://valontechnology.com/5009users/5009.htm">here</a> to load <a href="../../assets/grex_valon.VR0">this</a> configuration file.
+Next, go to synthesizer -&gt; write registers.
+Then, save the configuration to flash to preserve this configuration across reboots.</p>
+<h2 id="switch">Switch</h2>
+<p>With the box connected and powered on, create an SSH relay to the switch's configuration interface with</p>
+<div class="highlight"><pre><span></span><code>ssh -L <span class="m">8291</span>:192.168.88.1:8291 user@&lt;the ip address of the server&gt;
+</code></pre></div>
+<p>Then, using <a href="www.mikrotik.com/download/winbox.exe">winbox</a> connect to localhost, 
+select <code>files</code> on the left, and upload <a href="../../assets/GReX_Switch.backup">this config file</a>. This should trigger a reboot.</p>
+<h2 id="snap-golden-image">SNAP Golden Image</h2>
+<p>In order to use the SNAP's flash, you must first set switch S1 so that switches 2 and 5 are set to on. (In the on position, the switches are moved towards the edge of the PCB). The other switches on S1 should be off. </p>
+<p>The SNAP needs to be programmed with a "golden image" that runs on boot, acting as a bootstrapping device.
+To flash this, you need the free Vivado Lab Edition and the expensive Xilinx Platform Cable.</p>
+<p>Under <code>tools</code> go to <code>Add configuration memory device</code>. Entire configuration</p>
+<p>n25q256-3.3v-spi-x1_x2_x4</p>
+<p>Unplug programmer before rebooting.</p>
 
               
             </article>
