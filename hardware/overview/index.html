@@ -526,20 +526,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../software/guix/" class="md-nav__link">
-        Guix
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../software/pipeline/" class="md-nav__link">
         Pipeline
       </a>
@@ -680,7 +666,7 @@ broken down here into discrete kinds of signals.</p>
     B[FEM]
     C[SNAP]
     S[Switching Supply]
-    R[Linear Regulator]
+    R[Custom Linear PSU]
     P[Raspberry Pi]
     M[Mains Power]
     V[Synthesizer]
@@ -688,11 +674,11 @@ broken down here into discrete kinds of signals.</p>
     M --&gt;|120-240V AC| S
     subgraph The Box
         R --&gt;|6.5V DC| V
-        P --&gt;|"5V DC (USB)"| G
+        R --&gt;|12V DC| G
         S --&gt;|12V DC| C
         S --&gt;|12V DC| R
         R --&gt;|6.5V DC| B
-        C --&gt;|5V DC| P
+        R --&gt;|5V DC| P
     end
     B ---&gt;|5.5V DC| L1
     B ---&gt;|5.5V DC| L2</code></pre>

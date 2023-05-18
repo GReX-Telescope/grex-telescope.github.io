@@ -484,6 +484,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#snap-golden-image" class="md-nav__link">
+    SNAP Golden Image
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tapcp-and-the-raspberry-pi" class="md-nav__link">
     TAPCP and the Raspberry Pi
   </a>
@@ -501,20 +508,6 @@
   
 </nav>
       
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guix/" class="md-nav__link">
-        Guix
-      </a>
     </li>
   
 
@@ -596,6 +589,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#snap-golden-image" class="md-nav__link">
+    SNAP Golden Image
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tapcp-and-the-raspberry-pi" class="md-nav__link">
     TAPCP and the Raspberry Pi
   </a>
@@ -634,6 +634,17 @@ documented, so we'll try to make it as painless as possible here.</p>
 <a href="https://github.com/GReX-Telescope/gateware">here</a> with the latest releases
 found <a href="https://github.com/GReX-Telescope/gateware/releases">here</a>. Grab the
 latest fpg file, and you're good to go - no reason to recompile it.</p>
+<h2 id="snap-golden-image">SNAP Golden Image</h2>
+<p>To document the steps that are performed before shipping a box, here are the steps to program the golden (bootstrapping) image:</p>
+<p>Set switch S1 on the SANP so that switches 2 and 5 are set to on.
+(In the on position, the switches are moved towards the edge of the PCB).
+The other switches on S1 should be off.
+This allows the SNAP to utilize the nonvolatile flash memory.</p>
+<p>To flash this storage device, you need the free Vivado Lab Edition and the expensive Xilinx Platform Cable.</p>
+<p>In VLE, under <code>tools</code> go to <code>Add configuration memory device</code>.
+Use the memory device <code>n25q256-3.3v-spi-x1_x2_x4</code>.
+Unplug programmer before rebooting.
+All done! A reboot should start blinking some LEDs and the ethernet should get a DHCP address (if it's plugged in).</p>
 <h2 id="tapcp-and-the-raspberry-pi">TAPCP and the Raspberry Pi</h2>
 <p>The gateware we've built for the SNAP board includes a small CPU called the MicroBlaze
 that hosts a small webserver to deal with runtime interactions with FPGA memory. This server
@@ -646,12 +657,10 @@ so called "TAPCP" protocol <a href="https://github.com/kiranshila/tapcp_rs">here
 that the packet capture code informs the SNAP when to activate timing signals.</p>
 <h2 id="fpga-clocks-references-pps-synthesizers">FPGA Clocks, References, PPS, Synthesizers</h2>
 <p>The FPGA needs an external clock source, which is being provided via one of the
-output of the Valon synthesizer in box. Additionally, the board needs "pulse per
-second" (PPS) ticks, which come from the GPS reciever. If the user is in a place
-which doesn't have GPS (maybe in a lab during testing), we can override that
-check.</p>
-<p>TODO! Somehow</p>
-<p>TODO! Check clock is good and everything is locked? Does this happen after ADC configuration?</p>
+outputs of the Valon synthesizer in the box. Additionally, the board needs "pulse per
+second" (PPS) ticks, which come from the GPS reciever.</p>
+<p>The Valon synthesizer has two outputs but can lock both to an external reference.
+The GPS receiver in the box provides this (10 MHz) alongside the PPS signal.</p>
 
               
             </article>
@@ -681,13 +690,13 @@ check.</p>
       
       
         
-        <a href="../guix/" class="md-footer__link md-footer__link--next" aria-label="Next: Guix" rel="next">
+        <a href="../pipeline/" class="md-footer__link md-footer__link--next" aria-label="Next: Pipeline" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Guix
+              Pipeline
             </div>
           </div>
           <div class="md-footer__button md-icon">

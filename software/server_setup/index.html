@@ -464,20 +464,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../guix/" class="md-nav__link">
-        Guix
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../pipeline/" class="md-nav__link">
         Pipeline
       </a>
@@ -842,7 +828,7 @@
 <li>Remove the GPU retention clips from the retention bracket that would interfere with the card. It's too tall for it anyway.</li>
 <li>Replace the retention bracket and close the case.</li>
 </ol>
-<p>FIXME: Image</p>
+<p><img alt="" src="../../assets/server.jpg" /></p>
 <p>Finally, we need to hook up a monitor to the 3090 Ti so we can setup the software</p>
 <h2 id="initial-os-setup">Initial OS Setup</h2>
 <p>On boot, you will be presented with the Ubuntu graphical interface. If a password is requested, the deafult is provided in the information booklet that came with the hardware.</p>
@@ -1209,13 +1195,6 @@ Then, save the configuration to flash to preserve this configuration across rebo
 </code></pre></div>
 <p>Then, using <a href="www.mikrotik.com/download/winbox.exe">winbox</a> connect to localhost, 
 select <code>files</code> on the left, and upload <a href="../../assets/GReX_Switch.backup">this config file</a>. This should trigger a reboot.</p>
-<h2 id="snap-golden-image">SNAP Golden Image</h2>
-<p>In order to use the SNAP's flash, you must first set switch S1 so that switches 2 and 5 are set to on. (In the on position, the switches are moved towards the edge of the PCB). The other switches on S1 should be off. </p>
-<p>The SNAP needs to be programmed with a "golden image" that runs on boot, acting as a bootstrapping device.
-To flash this, you need the free Vivado Lab Edition and the expensive Xilinx Platform Cable.</p>
-<p>Under <code>tools</code> go to <code>Add configuration memory device</code>. Entire configuration</p>
-<p>n25q256-3.3v-spi-x1_x2_x4</p>
-<p>Unplug programmer before rebooting.</p>
 
               
             </article>

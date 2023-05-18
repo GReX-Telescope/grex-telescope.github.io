@@ -552,20 +552,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../guix/" class="md-nav__link">
-        Guix
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../pipeline/" class="md-nav__link">
         Pipeline
       </a>
@@ -706,15 +692,10 @@
 <h1 id="software-overview">Software Overview</h1>
 <p>There are two primary components to the software stack in GReX. First, the SNAP
 board must be configured and setup to send voltage data to the server. After
-that, the pipeline software <em>should</em> take care of the rest. This pipeline will
-exist as a composition of <a href="https://guix.gnu.org/">Guix</a> packages and potentially
-as a <a href="https://guix.gnu.org/manual/en/html_node/Invoking-guix-system.html">Guix
-System</a>
-definition for the entire system. This is to ensure determinisim in builds and
-to reduce the potential of mis-configuration.</p>
+that, the pipeline software <em>should</em> take care of the rest.</p>
 <h2 id="pipeline-overview">Pipeline Overview</h2>
 <pre class="mermaid"><code>flowchart TD
-    A[SNAP] --&gt;|UDP| B[Byte Slurper]
+    A[SNAP] --&gt;|UDP| B[T0]
     B --&gt;|PSRDADA| C[RFI Cleaning]
     C --&gt;|PSRDADA| D[Heimdall]
     D --&gt;|Sockets| E[T2]</code></pre>
@@ -744,6 +725,7 @@ to reduce the potential of mis-configuration.</p>
 <li>Gradual typing will be used (PEP 438) and checked with mypy or equivalent</li>
 <li>Environments will have pinned dependencies (reproducible)</li>
 </ul>
+<p>Most of this can be accomplised by using <a href="https://python-poetry.org/">Poetry</a>.</p>
 
               
             </article>
