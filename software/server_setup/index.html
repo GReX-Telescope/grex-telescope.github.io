@@ -923,8 +923,8 @@ sudo ldconfig
 <p>Now, remove the example file:</p>
 <div class="highlight"><pre><span></span><code>sudo rm /etc/kea/kea-dhcp4.conf
 </code></pre></div>
-<p>And replace it with a file called <code>kea-dhcp4.conf</code> with the following contents</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<p>And replace it with a file called <code>kea-dhcp4.conf</code> with the following contents:</p>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;Dhcp4&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;interfaces-config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;interfaces&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -955,12 +955,19 @@ sudo ldconfig
 <span class="w">                        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;routers&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">                        </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.1&quot;</span><span class="w"></span>
 <span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="p">],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;reservations&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">&quot;hw-address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;00:24:1D:1B:15:12&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">&quot;ip-address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.3&quot;</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
 <span class="w">                </span><span class="p">]</span><span class="w"></span>
 <span class="w">            </span><span class="p">}</span><span class="w"></span>
 <span class="w">        </span><span class="p">]</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
+This sets up a more or less standard DHCP instance, with one static allocation for the SNAP FPGA, as we're hard-coding it's MAC address in the gateware.</p>
 <p>Finally enable the DHCP server service</p>
 <div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> isc-kea-dhcp4-server
 </code></pre></div>
