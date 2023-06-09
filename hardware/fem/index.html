@@ -359,23 +359,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#firmware-design" class="md-nav__link">
-    Firmware Design
+  <a href="#software-design" class="md-nav__link">
+    Software Design
   </a>
   
-    <nav class="md-nav" aria-label="Firmware Design">
+    <nav class="md-nav" aria-label="Software Design">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#monitor" class="md-nav__link">
-    Monitor
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#control" class="md-nav__link">
-    Control
+  <a href="#cli-example" class="md-nav__link">
+    CLI Example
   </a>
   
 </li>
@@ -616,23 +609,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#firmware-design" class="md-nav__link">
-    Firmware Design
+  <a href="#software-design" class="md-nav__link">
+    Software Design
   </a>
   
-    <nav class="md-nav" aria-label="Firmware Design">
+    <nav class="md-nav" aria-label="Software Design">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#monitor" class="md-nav__link">
-    Monitor
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#control" class="md-nav__link">
-    Control
+  <a href="#cli-example" class="md-nav__link">
+    CLI Example
   </a>
   
 </li>
@@ -684,73 +670,63 @@ Additionally, this module provides rudimentary monitor and control support.</p>
 <h2 id="hardware-design">Hardware Design</h2>
 <p>The hardware design itself is implemented in the free <a href="https://www.kicad.org/">KiCAD</a>
 program and is available <a href="https://github.com/GReX-Telescope/FrontendModule">here</a>.
-The current hardware uses ENIG to help reflow of the fine-pitch components.</p>
+The current hardware uses ENIG to help reflow of the fine-pitch components.
+Additionally, it utilizes the low-loss RO4003C substrate in a custom 4-layer stackup. </p>
 <ul>
 <li>Schematics</li>
 <li>BOM</li>
 <li>Case</li>
 </ul>
-<h2 id="firmware-design">Firmware Design</h2>
+<p>Here is an annotated view of the PCB with major system components labeled:</p>
+<p><img alt="" src="../../assets/FEM_Annotated.png" /></p>
+<h2 id="software-design">Software Design</h2>
 <p>The RF hardware mostly operates without the intervention of any software. The
 only step required to use the RF hardware is to set the valid attenuation level,
 which defaults to 0 dB. As such, the primary goal of the digital section of the
 FEM is to perform Monitor and Control (MnC). MnC is achieved via an 115200 baud
 3.3V UART interface on the main connector. The firmware design is carried out
 in the Rust programming language, and whose source can be found
-<a href="https://github.com/GReX-Telescope/FEM_Firmware">here</a>.</p>
-<h3 id="monitor">Monitor</h3>
-<p>Every 1 second on UART (115200 baud), JSON payload of monitor data is sent out
-with the following schema</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;boardTemp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">29.6</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;voltages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;rawInput&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">6.2</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;analog&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.9</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaOne&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.3</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaTwo&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.3</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;currents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;rawInput&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.723</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;analog&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.53</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaOne&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.053</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaTwo&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.052</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;ifPower&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;channelOne&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;channelTwo&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-2.1</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;control&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;calOne&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;calTwo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaOnePowered&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaTwoPowered&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;attenuationLevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ifPowerThreshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-10</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<a href="https://github.com/GReX-Telescope/FEM_Firmware">here</a>. In that repository, one
+can also find the control software, which is used to perform the monitoring and
+controlling.</p>
+<p>With this software, there is control for enabling/disabling the LNA bias and
+setting the interstage IF attenuator. For the digital attenuator,
+we can set attenuation (and therefore change the total gain) from 0 dB to 31.5 dB.
+This attenuator is used to maximize the dynamic range of the ADC and can be set 
+for environmental RFI levels.</p>
+<h3 id="cli-example">CLI Example</h3>
+<p>To use the CLI program, connect the FEM to a serial port either with a USB to serial
+adapter or directly to a hardware UART port (like on the Raspberry Pi).</p>
+<div class="highlight"><pre><span></span><code>Usage: mnc-cli &lt;PORT&gt; &lt;COMMAND&gt;
+
+Commands:
+  monitor      Gets monitor data from the FEM
+  lna          Controls the power and calibration state of the LNA
+  good-if      Sets the IF <span class="s2">&quot;power good&quot;</span> threshold
+  attenuation  Sets the attenuation level <span class="k">in</span> dB <span class="o">(</span><span class="m">0</span> to <span class="m">31</span>.5<span class="o">)</span>
+  <span class="nb">help</span>         Print this message or the <span class="nb">help</span> of the given subcommand<span class="o">(</span>s<span class="o">)</span>
+
+Arguments:
+  &lt;PORT&gt;  Serial port <span class="k">for</span> the FEM
+
+Options:
+  -h, --help     Print <span class="nb">help</span>
+  -V, --version  Print version
 </code></pre></div>
-<h3 id="control">Control</h3>
-<p>The control payload must be a complete JSON object of the following form:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;control&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;calOne&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;calTwo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaOnePowered&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;lnaTwoPowered&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;attenuationLevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ifPowerThreshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-10</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<p>To set the power state of the LNAs, use:</p>
+<div class="highlight"><pre><span></span><code>./mnc-cli lna power ch&lt;<span class="m">1</span><span class="p">|</span><span class="m">2</span>&gt; &lt;enabled<span class="p">|</span>disabled&gt;
 </code></pre></div>
-<p>Over UART, there is control for enabling/disabling the calibration output,
-the LNA bias, and the interstage IF attenuator. For the digital attenuator,
-there are four levels (0-3), representing 0, 4, 8, 12 dB. This attenuator
-is to maximize the dynamic range of the ADC and can be set for environmental RFI levels.</p>
+<p>To set the attenuation:</p>
+<div class="highlight"><pre><span></span><code>./mnc-cli attenuation &lt;<span class="m">0</span>-31.5&gt;
+</code></pre></div>
+<p>To grab the monitor data:</p>
+<div class="highlight"><pre><span></span><code>./mnc-cli monitor
+</code></pre></div>
 <h3 id="physical-interface">Physical Interface</h3>
 <p>There are eight LEDs on the front panel. Four red LEDs to indicate power
 statess, two blue LEDs for serial activity, and two green LEDs for system
 status. The green LEDs will be enabled when the IF power is at a nominal
-level and will flash when the calibration signal is enabled.</p>
+level.</p>
 
               
             </article>
