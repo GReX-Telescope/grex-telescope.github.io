@@ -526,13 +526,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#graphics-drivers" class="md-nav__link">
-    Graphics Drivers
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#networking" class="md-nav__link">
     Networking
   </a>
@@ -598,26 +591,6 @@
   <a href="#pipeline-software" class="md-nav__link">
     Pipeline Software
   </a>
-  
-    <nav class="md-nav" aria-label="Pipeline Software">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#t0" class="md-nav__link">
-    T0
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#t2" class="md-nav__link">
-    T2
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -699,13 +672,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#graphics-drivers" class="md-nav__link">
-    Graphics Drivers
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#networking" class="md-nav__link">
     Networking
   </a>
@@ -772,26 +738,6 @@
     Pipeline Software
   </a>
   
-    <nav class="md-nav" aria-label="Pipeline Software">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#t0" class="md-nav__link">
-    T0
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#t2" class="md-nav__link">
-    T2
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -847,47 +793,10 @@ As in, the first server that is managed by Caltech at OVRO will be <code>grex-ca
 <div class="highlight"><pre><span></span><code>sudo hostnamectl set-hostname &lt;your-hostname&gt;
 </code></pre></div>
 <p>Some updates may require a reboot. If it asks, do that now.</p>
-<h2 id="graphics-drivers">Graphics Drivers</h2>
-<p>Puget ships with the NVIDIA drivers preinstalled (as it came with the T1000 card), but the version of CUDA may be out of date (as it was for us).
-To fix this, we're going to purge the system of NVIDIA stuff, add the official upstream NVIDIA package source, and build from there.</p>
-<p>First, let's get rid of all the existing NVIDIA stuff.</p>
-<div class="highlight"><pre><span></span><code>sudo apt-get purge nvidia*
-sudo apt remove nvidia-*
-sudo rm /etc/apt/sources.list.d/cuda*
-sudo apt-get autoremove <span class="o">&amp;&amp;</span> sudo apt-get autoclean
-sudo rm -rf /usr/local/cuda*
-</code></pre></div>
-<p>Now we'll do an update</p>
-<div class="highlight"><pre><span></span><code>sudo apt update
-sudo apt upgrade
-</code></pre></div>
-<p>And then install the NVIDIA repository</p>
-<div class="highlight"><pre><span></span><code>sudo add-apt-repository ppa:graphics-drivers/ppa
-sudo apt update
-</code></pre></div>
-<p>Next, we'll install the NVIDIA driver (515, unless anyone wants to update)
-<div class="highlight"><pre><span></span><code>sudo apt install libnvidia-common-515
-sudo apt install libnvidia-gl-515
-sudo apt install nvidia-driver-515
-</code></pre></div></p>
-<p>CUDA gets a little tricky, as we have to source the repo a bit more manually.</p>
-<div class="highlight"><pre><span></span><code>wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
-sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
-sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
-sudo add-apt-repository <span class="s2">&quot;deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /&quot;</span>
-sudo apt-get update
-sudo apt install cuda-11-7 
-</code></pre></div>
-<p>Finally, we will fixup our paths for linking when we build stuff with CUDA.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s1">&#39;export PATH=/usr/local/cuda-11.7/bin:$PATH&#39;</span> &gt;&gt; ~/.bashrc
-<span class="nb">echo</span> <span class="s1">&#39;export LD_LIBRARY_PATH=/usr/local/cuda-11.7/lib64:$LD_LIBRARY_PATH&#39;</span> &gt;&gt; ~/.bashrc
-<span class="nb">source</span> ~/.bashrc
-sudo ldconfig
-</code></pre></div>
 <h2 id="networking">Networking</h2>
 <p>Now, we need to setup the networking for the GReX system. We will operate under the assumption that the internet-facing connection will get an IP address from a DHCP server. If that is not the case, consult whoever runs your network on the appropriate setup. Regardless of the WAN connection, the 10 GbE fiber connection to the GReX terminal will be configured the same.</p>
 <h3 id="overview">Overview</h3>
-<p>The 10 GbE fiber port serves a few purposes. It is the main data transfer link between the FPGA in the field and the server, but it also carries the monitor and control for the box. This monitor and control connection includes the SNAP control connection and the Raspberry Pi. Both of these devices require an external DHCP server, which we have to provide on this port. Additionally, the 10 GbE switch in the box has its own default subnet for configuration (<code>192.168.88.X</code>). To make everything talk to each other, we need to add two IPs on this port: one in the subnet of the switch's config interface, and the other for DHCP of the various devices.</p>
+<p>The 10 GbE fiber port serves a few purposes. It is the main data transfer link between the FPGA in the field and the server, but it also carries the monitor and control for the box. This monitor and control connection includes the SNAP control connection and the Raspberry Pi. The SNAP requires an external DHCP server, which we have to provide on this port. Additionally, the 10 GbE switch in the box has its own default subnet for configuration (<code>192.168.88.X</code>). To make everything talk to each other, we need to add two IPs on this port: one in the subnet of the switch's config interface, and the other for DHCP of the various devices.</p>
 <h3 id="netplan">Netplan</h3>
 <p>In <code>/etc/netplan</code> remove any files that are currently there.</p>
 <p>Then, create a new file called <code>config.yaml</code> with the following contents</p>
@@ -947,7 +856,7 @@ sudo ldconfig
 <span class="w">                </span><span class="nt">&quot;subnet&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.0/24&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">                </span><span class="nt">&quot;pools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <span class="w">                    </span><span class="p">{</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.2 - 192.168.0.100&quot;</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.4 - 192.168.0.100&quot;</span><span class="w"></span>
 <span class="w">                    </span><span class="p">}</span><span class="w"></span>
 <span class="w">                </span><span class="p">],</span><span class="w"></span>
 <span class="w">                </span><span class="nt">&quot;option-data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -977,10 +886,9 @@ This sets up a more or less standard DHCP instance, with one static allocation f
 <p>Finally,</p>
 <div class="highlight"><pre><span></span><code>sudo reboot
 </code></pre></div>
-<p>After reboot, assuming your fiber line is plugged into the box, run</p>
+<p>After reboot, assuming your fiber line is plugged into the box, you can check the leases by looking at</p>
 <div class="highlight"><pre><span></span><code>cat /var/lib/kea/kea-leases4.csv
 </code></pre></div>
-<p>You should see the raspberry pi.</p>
 <h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
 <p>Unfortunatley, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
 <p>Add the following to <code>/etc/sysctl.conf</code></p>
@@ -988,13 +896,7 @@ This sets up a more or less standard DHCP instance, with one static allocation f
 kernel.shmall = 4294967296
 net.core.rmem_max = 536870912
 net.core.wmem_max = 536870912
-net.core.netdev_max_backlog = 416384
 net.core.optmem_max = 16777216
-net.ipv4.udp_mem = 11416320 15221760 22832640
-net.core.netdev_budget = 1024
-net.ipv4.tcp_timestamps = 0
-net.ipv4.tcp_sack = 0
-net.ipv4.tcp_low_latency = 1
 vm.swappiness=1
 </code></pre></div>
 <p>Then apply these changes with </p>
@@ -1081,26 +983,12 @@ This is easy enough with <a href="https://rustup.rs/">rustup</a></p>
 </code></pre></div>
 <p>Go ahead and <code>source ~/.bashrc</code> now to get these changes in your shell.</p>
 <h2 id="pipeline-software">Pipeline Software</h2>
-<p>To organize all the software needed for running the whole pipeline, make a new directory wherever you want (say, the home directory?) called <code>grex</code></p>
-<div class="highlight"><pre><span></span><code>mkdir <span class="nv">$HOME</span>/grex
+<p>To organize all the software needed for running the whole pipeline, we will grab the metapackage from github and clone somewhere (like the home directory):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span>
+git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 </code></pre></div>
-<p>Then, move to this directory and clone the software</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> <span class="nv">$HOME</span>/grex
-git clone https://github.com/GReX-Telescope/Pipeline pipeline
-git clone https://github.com/GReX-Telescope/GReX-T0 t0
-git clone https://github.com/GReX-Telescope/GReX-T2 t2
-</code></pre></div>
-<h3 id="t0">T0</h3>
-<p>As T0 is bare rust source code, we need to compile it.
-This links against a few required binaries, so we'll install those:</p>
-<div class="highlight"><pre><span></span><code>sudo apt-get install libhdf5-dev clang parallel -y
-</code></pre></div>
-<p><code>cd</code> into the <code>t0</code> folder we just created and run:</p>
-<div class="highlight"><pre><span></span><code>cargo build --release
-</code></pre></div>
-<h3 id="t2">T2</h3>
-<p>T2 is a python project, built with poetry. To set it up we will <code>cd</code> into the <code>t2</code> folder and run:</p>
-<div class="highlight"><pre><span></span><code>poetry install
+<p>Then, assuming you followed all the previous steps, build the pipeline software with</p>
+<div class="highlight"><pre><span></span><code>./grex/build.sh
 </code></pre></div>
 <h2 id="prometheus">Prometheus</h2>
 <p>To save data about the server (CPU usage, RAM usage, etc) and to collect monitoring metrics from various pieces of pipeline software, we use the <a href="https://prometheus.io/">prometheus</a> time series database. Each server will host its own database and <em>push</em> updates to the monitoring frontend Grafana.</p>
@@ -1182,15 +1070,15 @@ sudo systemctl <span class="nb">enable</span> prometheus
 <div class="highlight"><pre><span></span><code>sudo apt-get install prometheus-node-exporter
 </code></pre></div>
 <h1 id="turning-on-the-snap">Turning on the SNAP</h1>
-<p>SSH into the Pi (password is raspberry) via</p>
-<div class="highlight"><pre><span></span><code>ssh pi@&lt;the ip from dhcp-lease-list&gt;
+<p>To turn on the SNAP, SSH into the Pi (password is the same as the host machine) via</p>
+<div class="highlight"><pre><span></span><code>ssh pi@192.168.0.2
 </code></pre></div>
 <p>Then on the pi, run</p>
 <div class="highlight"><pre><span></span><code>python3 pwup_snap.py
 </code></pre></div>
 <p>There also exists <code>pwdn_snap.py</code>, with an obvious purpose.</p>
 <h1 id="preconfigured">Preconfigured</h1>
-<p>These steps should already be performed before we ship a box, but for completeness, here are the steps.</p>
+<p>These steps should already be performed before we ship a box, but for completeness, here are the steps that we performed.</p>
 <h2 id="valon">Valon</h2>
 <p>We need to configure the valon synthesizer to act as the LO for the downconverter and the reference clock for the SNAP ADC.</p>
 <p>Use the GUI tool <a href="https://valontechnology.com/5009users/5009.htm">here</a> to load <a href="../../assets/grex_valon.VR0">this</a> configuration file.
@@ -1202,6 +1090,14 @@ Then, save the configuration to flash to preserve this configuration across rebo
 </code></pre></div>
 <p>Then, using <a href="www.mikrotik.com/download/winbox.exe">winbox</a> connect to localhost, 
 select <code>files</code> on the left, and upload <a href="../../assets/GReX_Switch.backup">this config file</a>. This should trigger a reboot.</p>
+<h2 id="raspberry-pi">Raspberry Pi</h2>
+<p>We prepared the RPi image using the standard <a href="https://www.raspberrypi.com/software/operating-systems/">raspbain lite OS</a>.
+As part of the initial image creation, we set the hostname to <code>grex-pi</code> and enabled password-based SSH.</p>
+<p>Using <code>raspi-config</code>, we did the following:
+- disabled the serial login shell
+- enabled the hardware serial interface</p>
+<p>Then, we disabled the hardware's radios by modifying the <code>config.txt</code> file <a href="https://raspberrytips.com/disable-wifi-raspberry-pi/">like so</a>.</p>
+<p>Then, we configured the Pi to have the static IP address of <code>192.168.0.2</code> by following <a href="https://www.makeuseof.com/raspberry-pi-set-static-ip/">this</a></p>
 
               
             </article>
