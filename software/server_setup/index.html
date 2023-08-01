@@ -1098,6 +1098,9 @@ As part of the initial image creation, we set the hostname to <code>grex-pi</cod
 - enabled the hardware serial interface</p>
 <p>Then, we disabled the hardware's radios by modifying the <code>config.txt</code> file <a href="https://raspberrytips.com/disable-wifi-raspberry-pi/">like so</a>.</p>
 <p>Then, we configured the Pi to have the static IP address of <code>192.168.0.2</code> by following <a href="https://www.makeuseof.com/raspberry-pi-set-static-ip/">this</a></p>
+<p>Then, we disabled HCI UART by running</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl disable hciuart
+</code></pre></div>
 
               
             </article>
