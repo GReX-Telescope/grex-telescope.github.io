@@ -434,20 +434,6 @@
               
   
   
-  
-    <li class="md-nav__item">
-      <a href="../gateware.md" class="md-nav__link">
-        Gateware
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
     
   
   
@@ -642,13 +628,13 @@ The other switches on S1 should be off.
 This allows the SNAP to boot from the nonvolatile flash memory.</p>
 <p>To flash this storage device, you need the free Vivado Lab Edition (VLE) and the expensive Xilinx Platform Cable.</p>
 <p>After launching VLE, click <code>Open hardware manager</code>. After this, a green bar at the top should ask you to autoconnect. Assuming the platform cable is plugged into the SNAP and everything is powered on, click on that. It should connect and show the <code>xc7k160t</code> FPGA in the hardware section on the left.</p>
-<p><img alt="" src="assets/snap_connect.png" /></p>
+<p><img alt="" src="../../assets/snap_connect.png" /></p>
 <p>In VLE, under <code>tools</code> go to <code>Add configuration memory device</code>.
 Use the memory device <code>n25q256-3.3v-spi-x1_x2_x4</code>.</p>
-<p><img alt="" src="assets/config_mem.png" /></p>
+<p><img alt="" src="../../assets/config_mem.png" /></p>
 <p>It will then ask if you want to program the memory now, hit <code>Ok</code>.</p>
-<p>Using the golden image for the configuration file <a href="assets/golden.bin">here</a>, program the entire configuration memory device.</p>
-<p><img alt="" src="assets/snap_prog.png" /></p>
+<p>Using the golden image for the configuration file <a href="../../assets/golden.bin">here</a>, program the entire configuration memory device.</p>
+<p><img alt="" src="../../assets/snap_prog.png" /></p>
 <p>Unplug programmer before rebooting.
 All done! A reboot should start blinking some LEDs and the ethernet should get a DHCP address (if it's plugged in).</p>
 <h2 id="tapcp-and-the-raspberry-pi">TAPCP and the Raspberry Pi</h2>
