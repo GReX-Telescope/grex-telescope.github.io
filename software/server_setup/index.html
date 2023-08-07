@@ -807,73 +807,34 @@ As in, the first server that is managed by Caltech at OVRO will be <code>grex-ca
 </code></pre></div>
 <h3 id="dhcp-server">DHCP Server</h3>
 <p>Now, we need to setup the DHCP server on the 10 GbE port. First, we install the DHCP server software:</p>
-<p>Setup the repository that includes kea</p>
-<div class="highlight"><pre><span></span><code>curl -1sLf <span class="se">\</span>
-  <span class="s1">&#39;https://dl.cloudsmith.io/public/isc/kea-2-3/setup.deb.sh&#39;</span> <span class="se">\</span>
-  <span class="p">|</span> sudo -E bash
+<div class="highlight"><pre><span></span><code>sudo apt-get install dnsmasq
 </code></pre></div>
-<p>Then install with 
-<div class="highlight"><pre><span></span><code>sudo apt-get install isc-kea-dhcp4
-</code></pre></div></p>
-<p>Now, remove the example file:</p>
-<div class="highlight"><pre><span></span><code>sudo rm /etc/kea/kea-dhcp4.conf
+<p>Create the configuration file in <code>/etc/dnsmasq.conf</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Only bind to the 10 GbE interface</span><span class="w"></span>
+<span class="na">interface</span><span class="o">=</span><span class="s">enp1s0f0</span><span class="w"></span>
+<span class="c1"># Disable DNS</span><span class="w"></span>
+<span class="na">port</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
+<span class="c1"># DHCP Options</span><span class="w"></span>
+<span class="na">dhcp-range</span><span class="o">=</span><span class="s">192.168.0.0,static</span><span class="w"></span>
+<span class="na">dhcp-option</span><span class="o">=</span><span class="s">option:router,192.168.0.1</span><span class="w"></span>
+<span class="na">dhcp-option</span><span class="o">=</span><span class="s">option:netmask,255.255.255.0</span><span class="w"></span>
+<span class="na">dhcp-host</span><span class="o">=</span><span class="s">00:40:BF:06:13:02,192.168.0.3,snap</span><span class="w"></span>
+<span class="na">log-async</span><span class="w"></span>
+<span class="na">log-queries</span><span class="w"></span>
+<span class="na">log-dhcp</span><span class="w"></span>
 </code></pre></div>
-<p>And replace it with a file called <code>kea-dhcp4.conf</code> with the following contents:</p>
-<p><div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;Dhcp4&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;interfaces-config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;interfaces&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                </span><span class="s2">&quot;enp1s0f0&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">],</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;service-sockets-max-retries&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;service-sockets-retry-wait-time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="w"></span>
-<span class="w">        </span><span class="p">},</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;lease-database&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;memfile&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;persist&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/lib/kea/kea-leases4.csv&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;lfc-interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3600</span><span class="w"></span>
-<span class="w">        </span><span class="p">},</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;renew-timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15840</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;rebind-timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">27720</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;valid-lifetime&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">31680</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;subnet4&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;subnet&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.0/24&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;pools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                    </span><span class="p">{</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;pool&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.4 - 192.168.0.100&quot;</span><span class="w"></span>
-<span class="w">                    </span><span class="p">}</span><span class="w"></span>
-<span class="w">                </span><span class="p">],</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;option-data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                    </span><span class="p">{</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;routers&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.1&quot;</span><span class="w"></span>
-<span class="w">                    </span><span class="p">}</span><span class="w"></span>
-<span class="w">                </span><span class="p">],</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;reservations&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                    </span><span class="p">{</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;hw-address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;00:24:1D:1B:15:12&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;ip-address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.0.3&quot;</span><span class="w"></span>
-<span class="w">                    </span><span class="p">}</span><span class="w"></span>
-<span class="w">                </span><span class="p">]</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
-This sets up a more or less standard DHCP instance, with one static allocation for the SNAP FPGA, as we're hard-coding it's MAC address in the gateware.</p>
+<p>This sets up a very simple DHCP server that just gives the IP address <code>192.168.0.3</code> to the SNAP, which has a hard-coded MAC address.</p>
 <p>Finally enable the DHCP server service</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> isc-kea-dhcp4-server
+<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> dnsmasq --now
 </code></pre></div>
 <p>And check the status to make sure everything came up ok</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl status isc-kea-dhcp4-server
+<div class="highlight"><pre><span></span><code>sudo systemctl status dnsmasq
 </code></pre></div>
 <p>Finally,</p>
 <div class="highlight"><pre><span></span><code>sudo reboot
 </code></pre></div>
-<p>After reboot, assuming your fiber line is plugged into the box, you can check the leases by looking at</p>
-<div class="highlight"><pre><span></span><code>cat /var/lib/kea/kea-leases4.csv
+<p>After reboot, assuming your fiber line is plugged into the box and the SNAP is turned on, you can check the lease by looking at</p>
+<div class="highlight"><pre><span></span><code>cat /var/lib/misc/dnsmasq.leases
 </code></pre></div>
 <h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
 <p>Unfortunatley, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
