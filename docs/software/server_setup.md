@@ -300,7 +300,7 @@ curl -sSL https://install.python-poetry.org | python3 -
 We need to make a few adjustments to `~/.bashrc` to correct the paths and fix a bug. Append the following to the end.
 
 ```sh
-export PATH="/home/user/.local/bin:$PATH"
+export PATH="~/.local/bin:$PATH"
 # Fix the "Poetry: Failed to unlock the collection" issue
 export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 ```
@@ -308,6 +308,12 @@ export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 Go ahead and `source ~/.bashrc` now to get these changes in your shell.
 
 ## Pipeline Software
+
+Install dependencies for building pipeline software.
+
+```sh
+sudo apt-get install libhdf5-dev libclang-dev python3-dev
+```
 
 To organize all the software needed for running the whole pipeline, we will grab the metapackage from github and clone somewhere (like the home directory):
 
@@ -319,7 +325,8 @@ git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 Then, assuming you followed all the previous steps, build the pipeline software with
 
 ```sh
-./grex/build.sh
+cd grex
+./build.sh
 ```
 
 ## Prometheus
