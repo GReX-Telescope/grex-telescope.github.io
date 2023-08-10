@@ -875,7 +875,7 @@ sudo systemctl enable systemd-networkd
 </code></pre></div>
 <h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
 <p>Unfortunately, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
-<p>Add the following to <code>/etc/sysctl.conf</code></p>
+<p>Create the file <code>/etc/sysctl.d/20-grex.conf</code> with the following contents:</p>
 <div class="highlight"><pre><span></span><code>kernel.shmmax = 68719476736
 kernel.shmall = 4294967296
 net.core.rmem_max = 536870912
@@ -942,7 +942,7 @@ ethtool -A enp1s0f0 tx on
     <span class="nb">source</span> ~/.bashrc
 <span class="k">fi</span>
 </code></pre></div>
-<p>In here, we're also souring <code>~/.bashrc</code> so we get it over ssh.</p>
+<p>In here, we're also sourcing <code>~/.bashrc</code> so we get it over ssh.</p>
 <p>Finally, install the pipeline dependencies with:</p>
 <div class="highlight"><pre><span></span><code>guix install psrdada snap_bringup heimdall-astro
 </code></pre></div>
