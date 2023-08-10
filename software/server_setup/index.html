@@ -596,6 +596,34 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box/" class="md-nav__link">
+        Box Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operation/" class="md-nav__link">
+        Operation
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1025,38 +1053,7 @@ sudo systemctl <span class="nb">enable</span> prometheus
 <p>Now we will install the node-exporter, which gives us metrics of the computer itself.</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install prometheus-node-exporter
 </code></pre></div>
-<h1 id="turning-on-the-snap">Turning on the SNAP</h1>
-<p>To turn on the SNAP, SSH into the Pi (password is the same as the host machine) via</p>
-<div class="highlight"><pre><span></span><code>ssh pi@192.168.0.2
-</code></pre></div>
-<p>Then on the pi, run</p>
-<div class="highlight"><pre><span></span><code>python3 pwup_snap.py
-</code></pre></div>
-<p>There also exists <code>pwdn_snap.py</code>, with an obvious purpose.</p>
-<h1 id="preconfigured">Preconfigured</h1>
-<p>These steps should already be performed before we ship a box, but for completeness, here are the steps that we performed.</p>
-<h2 id="valon">Valon</h2>
-<p>We need to configure the valon synthesizer to act as the LO for the downconverter and the reference clock for the SNAP ADC.</p>
-<p>Use the GUI tool <a href="https://valontechnology.com/5009users/5009.htm">here</a> to load <a href="../../assets/grex_valon.VR0">this</a> configuration file.
-Next, go to synthesizer -&gt; write registers.
-Then, save the configuration to flash to preserve this configuration across reboots.</p>
-<h2 id="switch">Switch</h2>
-<p>With the box connected and powered on, create an SSH relay to the switch's configuration interface with</p>
-<div class="highlight"><pre><span></span><code>ssh -L <span class="m">8291</span>:192.168.88.1:8291 user@&lt;the ip address of the server&gt;
-</code></pre></div>
-<p>Then, using <a href="www.mikrotik.com/download/winbox.exe">winbox</a> connect to localhost, 
-select <code>files</code> on the left, and upload <a href="../../assets/GReX_Switch.backup">this config file</a>. This should trigger a reboot.</p>
-<h2 id="raspberry-pi">Raspberry Pi</h2>
-<p>We prepared the RPi image using the standard <a href="https://www.raspberrypi.com/software/operating-systems/">raspbian lite OS</a>.
-As part of the initial image creation, we set the hostname to <code>grex-pi</code> and enabled password-based SSH.</p>
-<p>Using <code>raspi-config</code>, we did the following:
-- disabled the serial login shell
-- enabled the hardware serial interface</p>
-<p>Then, we disabled the hardware's radios by modifying the <code>config.txt</code> file <a href="https://raspberrytips.com/disable-wifi-raspberry-pi/">like so</a>.</p>
-<p>Then, we configured the Pi to have the static IP address of <code>192.168.0.2</code> by following <a href="https://www.makeuseof.com/raspberry-pi-set-static-ip/">this</a></p>
-<p>Then, we disabled HCI UART by running</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl disable hciuart
-</code></pre></div>
+<p>All done! We should now be ready to run the pipeline!</p>
 
               
             </article>
@@ -1086,13 +1083,13 @@ As part of the initial image creation, we set the hostname to <code>grex-pi</cod
       
       
         
-        <a href="../../about/" class="md-footer__link md-footer__link--next" aria-label="Next: About" rel="next">
+        <a href="../box/" class="md-footer__link md-footer__link--next" aria-label="Next: Box Setup" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              About
+              Box Setup
             </div>
           </div>
           <div class="md-footer__button md-icon">
