@@ -263,6 +263,8 @@ fi
 
 In here, we're also souring `~/.bashrc` so we get it over ssh.
 
+Relog to run the setup in `~/.bashrc`.
+
 Finally, install the pipeline dependencies with:
 
 ```sh
