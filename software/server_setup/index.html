@@ -785,6 +785,15 @@ As in, the first server that is managed by Caltech at OVRO will be <code>grex-ca
 <p>The 10 GbE fiber port serves a few purposes. It is the main data transfer link between the FPGA in the field and the server, but it also carries the monitor and control for the box. This monitor and control connection includes the SNAP control connection and the Raspberry Pi. The SNAP requires an external DHCP server, which we have to provide on this port. Additionally, the 10 GbE switch in the box has its own default subnet for configuration (<code>192.168.88.X</code>). To make everything talk to each other, we need to add two IPs on this port: one in the subnet of the switch's config interface, and the other for DHCP of the various devices.</p>
 <h3 id="netplan">Netplan</h3>
 <p>In <code>/etc/netplan</code> remove any files that are currently there.</p>
+<p>Check whether you are using NetworkManager or networkd:
+<div class="highlight"><pre><span></span><code>systemctl status NetworkManager
+systemctl status systemd-networkd
+</code></pre></div></p>
+<p>If NetworkManager is running and networkd is not, disable NetworkManager and enable networkd. (Otherwise, skip this step.)
+<div class="highlight"><pre><span></span><code>sudo systemctl stop NetworkManager
+sudo systemctl disable NetworkManager
+sudo systemctl enable systemd-networkd
+</code></pre></div></p>
 <p>Then, create a new file called <code>config.yaml</code> with the following contents</p>
 <div class="highlight"><pre><span></span><code><span class="nt">network</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
@@ -837,7 +846,7 @@ As in, the first server that is managed by Caltech at OVRO will be <code>grex-ca
 <div class="highlight"><pre><span></span><code>cat /var/lib/misc/dnsmasq.leases
 </code></pre></div>
 <h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
-<p>Unfortunatley, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
+<p>Unfortunately, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
 <p>Add the following to <code>/etc/sysctl.conf</code></p>
 <div class="highlight"><pre><span></span><code>kernel.shmmax = 68719476736
 kernel.shmall = 4294967296
@@ -862,9 +871,6 @@ ethtool -A enp1s0f0 tx on
 <p>Make this file executable with</p>
 <div class="highlight"><pre><span></span><code>sudo chmod +x /etc/rc.local
 </code></pre></div>
-<p>Then enable the <code>rc-local</code> service</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> rc-local
-</code></pre></div>
 <p>Now create the file <code>/etc/systemd/system/rc-local.service</code> with the following contents:</p>
 <div class="highlight"><pre><span></span><code><span class="k">[Unit]</span><span class="w"></span>
 <span class="w"> </span><span class="na">Description</span><span class="o">=</span><span class="s">/etc/rc.local Compatibility</span><span class="w"></span>
@@ -880,6 +886,9 @@ ethtool -A enp1s0f0 tx on
 
 <span class="k">[Install]</span><span class="w"></span>
 <span class="w"> </span><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span><span class="w"></span>
+</code></pre></div>
+<p>Then enable the <code>rc-local</code> service</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> rc-local
 </code></pre></div>
 <p>Finally, reboot</p>
 <h2 id="guix">Guix</h2>
@@ -911,7 +920,7 @@ ethtool -A enp1s0f0 tx on
 </code></pre></div>
 <h2 id="rust">Rust</h2>
 <p>Many parts of the pipeline software are written in the Rust programming language.
-We will build be building this software from scratch, so we need to install the rust compiler and it's tooling.
+We will be building this software from scratch, so we need to install the rust compiler and its tooling.
 This is easy enough with <a href="https://rustup.rs/">rustup</a></p>
 <p>We need curl for the rustup installer, so</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install curl -y
@@ -1038,7 +1047,7 @@ Then, save the configuration to flash to preserve this configuration across rebo
 <p>Then, using <a href="www.mikrotik.com/download/winbox.exe">winbox</a> connect to localhost, 
 select <code>files</code> on the left, and upload <a href="../../assets/GReX_Switch.backup">this config file</a>. This should trigger a reboot.</p>
 <h2 id="raspberry-pi">Raspberry Pi</h2>
-<p>We prepared the RPi image using the standard <a href="https://www.raspberrypi.com/software/operating-systems/">raspbain lite OS</a>.
+<p>We prepared the RPi image using the standard <a href="https://www.raspberrypi.com/software/operating-systems/">raspbian lite OS</a>.
 As part of the initial image creation, we set the hostname to <code>grex-pi</code> and enabled password-based SSH.</p>
 <p>Using <code>raspi-config</code>, we did the following:
 - disabled the serial login shell
