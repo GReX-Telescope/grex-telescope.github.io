@@ -974,6 +974,9 @@ git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 <p>Then, assuming you followed all the previous steps, build the pipeline software with</p>
 <div class="highlight"><pre><span></span><code>./grex/build.sh
 </code></pre></div>
+<p>Lastly, you'll need to install the <code>parallel</code> package</p>
+<div class="highlight"><pre><span></span><code>sudo apt install parallel -y
+</code></pre></div>
 <h2 id="prometheus">Prometheus</h2>
 <p>To save data about the server (CPU usage, RAM usage, etc) and to collect monitoring metrics from various pieces of pipeline software, we use the <a href="https://prometheus.io/">prometheus</a> time series database. Each server will host its own database and <em>push</em> updates to the monitoring frontend Grafana.</p>
 <p>First, create a new group and user</p>
