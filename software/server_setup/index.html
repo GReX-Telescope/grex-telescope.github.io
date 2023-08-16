@@ -855,24 +855,44 @@ sudo systemctl enable systemd-networkd
 <span class="na">dhcp-range</span><span class="o">=</span><span class="s">192.168.0.0,static</span><span class="w"></span>
 <span class="na">dhcp-option</span><span class="o">=</span><span class="s">option:router,192.168.0.1</span><span class="w"></span>
 <span class="na">dhcp-option</span><span class="o">=</span><span class="s">option:netmask,255.255.255.0</span><span class="w"></span>
-<span class="na">dhcp-host</span><span class="o">=</span><span class="s">00:40:BF:06:13:02,192.168.0.3,snap</span><span class="w"></span>
+<span class="c1">#dhcp-host=&lt;SNAP_MAC&gt;,192.168.0.3,snap</span><span class="w"></span>
 <span class="na">log-async</span><span class="w"></span>
 <span class="na">log-queries</span><span class="w"></span>
 <span class="na">log-dhcp</span><span class="w"></span>
 </code></pre></div>
-<p>This sets up a very simple DHCP server that just gives the IP address <code>192.168.0.3</code> to the SNAP, which has a hard-coded MAC address.</p>
-<p>Finally enable the DHCP server service</p>
+<p>Then, enable the DHCP server service
 <div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> dnsmasq --now
+</code></pre></div></p>
+<p>This sets up a very simple DHCP server that will give the IP address <code>192.168.0.3</code> to the SNAP.
+Unfortunately, the folks who set up the networking interface for the SNAP only provide a DHCP interface and a dynamic (non-observable) MAC address (for some reason).
+As such, we have to now turn on the SNAP, wait for it to try to get an IP address from <code>dnsmasq</code> so we know it's MAC, then update the <code>dhcp-host</code> line and restart the DHCP server.</p>
+<ol>
+<li>Power cycle the SNAP (or turn it on if it wasn't turned on yet) following the instructions in <a href="../operation/">operation</a></li>
+<li>Wait a moment and open the log of dnsmasq with <code>journalctl -u dnsmasq</code>, skip to the bottom with <code>G</code> (Shift + g)</li>
+<li>You should see a line like
+<div class="highlight"><pre><span></span><code>Aug 16 14:39:06 grex-caltech-ovro dnsmasq-dhcp[5115]: 1085377743 DHCPDISCOVER(enp1s0f0) 00:40:bf:06:13:02 no address available
 </code></pre></div>
-<p>And check the status to make sure everything came up ok</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl status dnsmasq
+This implies the SNAP has a MAC address of <code>00:40:bf:06:13:02</code> (yours will be different).</li>
+<li>Go back and uncomment and edit the <code>dhcp-host</code> line of <code>/etc/dnsmasq.conf</code> to contain this MAC.
+   For example, in this case we would put <code>dhcp-host=00:40:bf:06:13:02,192.168.0.3,snap</code></li>
+<li>Finally, restart the dhcp server with <code>sudo systemctl restart dnsmasq</code></li>
+</ol>
+<p>After waiting a bit for the SNAP to send a new request for a DHCP lease, look at the latest logs again from journalctl. If it ends with something like</p>
+<div class="highlight"><pre><span></span><code>Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 DHCPREQUEST(enp1s0f0) 192.168.0.3 00:40:bf:06:13:02
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 tags: known, enp1s0f0
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 DHCPACK(enp1s0f0) 192.168.0.3 00:40:bf:06:13:02 snap
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 requested options: 1:netmask, 3:router, 28:broadcast, 6:dns-server
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 next server: 192.168.0.1
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  1 option: 53 message-type  5
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option: 54 server-identifier  192.168.0.1
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option: 51 lease-time  1h
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option: 58 T1  30m
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option: 59 T2  52m30s
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option: 28 broadcast  192.168.0.255
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option:  1 netmask  255.255.255.0
+Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option:  3 router  192.168.0.1
 </code></pre></div>
-<p>Finally,</p>
-<div class="highlight"><pre><span></span><code>sudo reboot
-</code></pre></div>
-<p>After reboot, assuming your fiber line is plugged into the box and the SNAP is turned on, you can check the lease by looking at</p>
-<div class="highlight"><pre><span></span><code>cat /var/lib/misc/dnsmasq.leases
-</code></pre></div>
+<p>That means the SNAP got an IP. You should now be able to <code>ping 192.168.0.3</code> to make sure it's alive.</p>
 <h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
 <p>Unfortunately, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
 <p>Create the file <code>/etc/sysctl.d/20-grex.conf</code> with the following contents:</p>
