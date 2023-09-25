@@ -532,6 +532,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running-the-pipeline" class="md-nav__link">
+    Running the Pipeline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#triggering-voltage-dumps" class="md-nav__link">
+    Triggering voltage dumps
+  </a>
+  
+    <nav class="md-nav" aria-label="Triggering voltage dumps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#voltage-dump-format" class="md-nav__link">
+    Voltage Dump Format
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -595,6 +622,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running-the-pipeline" class="md-nav__link">
+    Running the Pipeline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#triggering-voltage-dumps" class="md-nav__link">
+    Triggering voltage dumps
+  </a>
+  
+    <nav class="md-nav" aria-label="Triggering voltage dumps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#voltage-dump-format" class="md-nav__link">
+    Voltage Dump Format
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -644,6 +698,16 @@
 <span class="nb">exit</span> <span class="m">0</span>
 </code></pre></div>
 <p>Make it executable is <code>chmod +x snap.sh</code>, and use <code>./snap.sh &lt;on|off&gt;</code> to control the power state of the SNAP.</p>
+<h2 id="running-the-pipeline">Running the Pipeline</h2>
+<p>In the <code>grex</code> folder, under <code>pipeline</code> there is the single bash script that runs the pipeline.
+Simply calling it <code>./grex.sh</code> should start everything up. By default, it will run the normal detection pipeline.
+If you want to just run T0 (packet capture and first stage processing), remove the final line that calls <code>psrdada</code> and replace it (the whole line) with <code>filterbank</code>.</p>
+<h2 id="triggering-voltage-dumps">Triggering voltage dumps</h2>
+<p>Normally, T2 will send triggers to T0 to dump the voltage ringbuffer to disk. You can emulate this by sending a UDP packet to the trigger socket any other way. One simple way is with bash</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s2">&quot; &quot;</span> &gt; /dev/udp/localhost/65432
+</code></pre></div>
+<h3 id="voltage-dump-format">Voltage Dump Format</h3>
+<p>The voltage dumps you get are written as HDF5 files. It contains a single tensor of complex voltage data from both polarizations. Additionally, there is a timestamp attribute on the data, as MJD Days (UTC). This timestamp is for the first sample in the time axis.</p>
 
               
             </article>
