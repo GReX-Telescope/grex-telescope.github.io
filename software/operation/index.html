@@ -673,7 +673,7 @@
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/env bash</span>
 <span class="c1"># Usage: ./snap.sh &lt;on|off&gt;</span>
 <span class="nv">BASE_GPIO_PATH</span><span class="o">=</span>/sys/class/gpio
-<span class="nv">PWR_PIN</span><span class="o">=</span><span class="m">20</span>
+<span class="nv">PWN_PIN</span><span class="o">=</span><span class="m">20</span>
 <span class="k">if</span> <span class="o">[</span> ! -e <span class="nv">$BASE_GPIO_PATH</span>/gpio<span class="nv">$PWN_PIN</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
   <span class="nb">echo</span> <span class="s2">&quot;20&quot;</span> &gt; <span class="nv">$BASE_GPIO_PATH</span>/export
 <span class="k">fi</span>
