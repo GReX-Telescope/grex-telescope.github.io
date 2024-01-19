@@ -587,6 +587,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pi-ssh" class="md-nav__link">
+    Pi SSH
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -761,6 +768,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pi-ssh" class="md-nav__link">
+    Pi SSH
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -813,31 +827,31 @@ As in, the first server that is managed by Caltech at OVRO will be <code>grex-ca
 <p>The 10 GbE fiber port serves a few purposes. It is the main data transfer link between the FPGA in the field and the server, but it also carries the monitor and control for the box. This monitor and control connection includes the SNAP control connection and the Raspberry Pi. The SNAP requires an external DHCP server, which we have to provide on this port. Additionally, the 10 GbE switch in the box has its own default subnet for configuration (<code>192.168.88.X</code>). To make everything talk to each other, we need to add two IPs on this port: one in the subnet of the switch's config interface, and the other for DHCP of the various devices.</p>
 <h3 id="netplan">Netplan</h3>
 <p>In <code>/etc/netplan</code> remove any files that are currently there.</p>
-<p>Check whether you are using NetworkManager or networkd:
+<p>Check whether you are using NetworkManager or networkd:</p>
 <div class="highlight"><pre><span></span><code>systemctl status NetworkManager
 systemctl status systemd-networkd
-</code></pre></div></p>
-<p>If NetworkManager is running and networkd is not, disable NetworkManager and enable networkd. (Otherwise, skip this step.)
+</code></pre></div>
+<p>If NetworkManager is running and networkd is not, disable NetworkManager and enable networkd. (Otherwise, skip this step.)</p>
 <div class="highlight"><pre><span></span><code>sudo systemctl stop NetworkManager
 sudo systemctl disable NetworkManager
 sudo systemctl enable systemd-networkd
-</code></pre></div></p>
+</code></pre></div>
 <p>Then, create a new file called <code>config.yaml</code> with the following contents</p>
 <div class="highlight"><pre><span></span><code><span class="nt">network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">renderer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networkd</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ethernets</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="c1"># Two WAN interfaces. Configure this according to your network setup</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enp36s0f0</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enp36s0f1</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">        </span><span class="c1"># 10 GbE connection over fiber to the box</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enp1s0f0</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">mtu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9000</span><span class="w"></span>
-<span class="w">            </span><span class="nt">addresses</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.1/24</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.88.2/24</span><span class="w"></span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">renderer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networkd</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ethernets</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Two WAN interfaces. Configure this according to your network setup</span><span class="w"></span>
+<span class="w">    </span><span class="nt">enp36s0f0</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">enp36s0f1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># 10 GbE connection over fiber to the box</span><span class="w"></span>
+<span class="w">    </span><span class="nt">enp1s0f0</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mtu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9000</span><span class="w"></span>
+<span class="w">      </span><span class="nt">addresses</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.1/24</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.88.2/24</span><span class="w"></span>
 </code></pre></div>
 <p>Then apply with</p>
 <div class="highlight"><pre><span></span><code>sudo netplan apply
@@ -860,23 +874,21 @@ sudo systemctl enable systemd-networkd
 <span class="na">log-queries</span><span class="w"></span>
 <span class="na">log-dhcp</span><span class="w"></span>
 </code></pre></div>
-<p>Then, enable the DHCP server service
+<p>Then, enable the DHCP server service</p>
 <div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> dnsmasq --now
-</code></pre></div></p>
+</code></pre></div>
 <p>This sets up a very simple DHCP server that will give the IP address <code>192.168.0.3</code> to the SNAP.
 Unfortunately, the folks who set up the networking interface for the SNAP only provide a DHCP interface and a dynamic (non-observable) MAC address (for some reason).
 As such, we have to now turn on the SNAP, wait for it to try to get an IP address from <code>dnsmasq</code> so we know it's MAC, then update the <code>dhcp-host</code> line and restart the DHCP server.</p>
 <ol>
 <li>Power cycle the SNAP (or turn it on if it wasn't turned on yet) following the instructions in <a href="../operation/">operation</a></li>
 <li>Wait a moment and open the log of dnsmasq with <code>journalctl -u dnsmasq</code>, skip to the bottom with <code>G</code> (Shift + g)</li>
-<li>You should see a line like
+<li>You should see a line like</li>
+</ol>
 <div class="highlight"><pre><span></span><code>Aug 16 14:39:06 grex-caltech-ovro dnsmasq-dhcp[5115]: 1085377743 DHCPDISCOVER(enp1s0f0) 00:40:bf:06:13:02 no address available
 </code></pre></div>
-This implies the SNAP has a MAC address of <code>00:40:bf:06:13:02</code> (yours will be different).</li>
-<li>Go back and uncomment and edit the <code>dhcp-host</code> line of <code>/etc/dnsmasq.conf</code> to contain this MAC.
-   For example, in this case we would put <code>dhcp-host=00:40:bf:06:13:02,192.168.0.3,snap</code></li>
-<li>Finally, restart the dhcp server with <code>sudo systemctl restart dnsmasq</code></li>
-</ol>
+<p>This implies the SNAP has a MAC address of <code>00:40:bf:06:13:02</code> (yours will be different). 4. Go back and uncomment and edit the <code>dhcp-host</code> line of <code>/etc/dnsmasq.conf</code> to contain this MAC.
+For example, in this case we would put <code>dhcp-host=00:40:bf:06:13:02,192.168.0.3,snap</code> 5. Finally, restart the dhcp server with <code>sudo systemctl restart dnsmasq</code></p>
 <p>After waiting a bit for the SNAP to send a new request for a DHCP lease, look at the latest logs again from journalctl. If it ends with something like</p>
 <div class="highlight"><pre><span></span><code>Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 DHCPREQUEST(enp1s0f0) 192.168.0.3 00:40:bf:06:13:02
 Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 tags: known, enp1s0f0
@@ -903,7 +915,7 @@ net.core.wmem_max = 536870912
 net.core.optmem_max = 16777216
 vm.swappiness=1
 </code></pre></div>
-<p>Then apply these changes with </p>
+<p>Then apply these changes with</p>
 <div class="highlight"><pre><span></span><code>sudo sysctl --system
 </code></pre></div>
 <p>Now, we need a program called <code>ethtool</code> to apply some more settings</p>
@@ -955,7 +967,7 @@ ethtool -A enp1s0f0 tx on
 <div class="highlight"><pre><span></span><code>guix pull
 </code></pre></div>
 <p>This step may take a while.</p>
-<p>Create (or add to) <code>~/.bash_profile</code> </p>
+<p>Create (or add to) <code>~/.bash_profile</code></p>
 <div class="highlight"><pre><span></span><code><span class="nv">GUIX_PROFILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.guix-profile&quot;</span>
 . <span class="s2">&quot;</span><span class="nv">$GUIX_PROFILE</span><span class="s2">/etc/profile&quot;</span>
 <span class="k">if</span> <span class="o">[</span> -f ~/.bashrc <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
@@ -1024,17 +1036,17 @@ sudo mv consoles/ console_libraries/ /etc/prometheus/
 </code></pre></div>
 <p>Now, we configure. Open up <code>/etc/prometheus/prometheus.yml</code> and edit to contain:</p>
 <div class="highlight"><pre><span></span><code>global:
-    scrape_interval: 10s
-    evaluation_interval: 10s
+  scrape_interval: 10s
+  evaluation_interval: 10s
 scrape_configs:
-    - job_name: &quot;prometheus&quot;
-      static_configs:
+  - job_name: &quot;prometheus&quot;
+    static_configs:
       - targets: [&quot;localhost:9090&quot;, &quot;localhost:9100&quot;, &quot;localhost:8083&quot;]
 remote_write:
-    - url: &lt;grafana-url&gt;
-      basic_auth: 
-        username: &lt;grafana username&gt;
-        password: &lt;grafana api key&gt;
+  - url: &lt;grafana-url&gt;
+    basic_auth:
+      username: &lt;grafana username&gt;
+      password: &lt;grafana api key&gt;
 </code></pre></div>
 <p>If you are hooking up to our grafana instance, you will get an API key from the project, otherwise you'd create a <code>remote_write</code> section that reflects your monitoring stack.</p>
 <p>Now, create a systemd unit to run the database in the file <code>/etc/systemd/system/prometheus.service</code></p>
@@ -1075,6 +1087,23 @@ sudo systemctl <span class="nb">enable</span> prometheus
 </code></pre></div>
 <p>Now we will install the node-exporter, which gives us metrics of the computer itself.</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install prometheus-node-exporter
+</code></pre></div>
+<h2 id="pi-ssh">Pi SSH</h2>
+<p>One nice last thing will be to configure easy access to the Raspberry Pi's SSH. We can do that by creating a passwordless SSH key and installing it on the pi. We're going to be behind ssh anyway, and the Pi isn't public-facing, so this is a safe thing to do.</p>
+<p>On the server, generate a new ssh keypair with</p>
+<div class="highlight"><pre><span></span><code>ssh-keygen -t rsa
+</code></pre></div>
+<p>Then, install it on the pi with</p>
+<div class="highlight"><pre><span></span><code>ssh-copy-id pi@192.168.0.2
+</code></pre></div>
+<p>Finally, create an SSH config that automatically supplies the hostname and user:</p>
+<p>Create a file on the GReX server in <code>~/.ssh/config</code> with the contents</p>
+<div class="highlight"><pre><span></span><code>Host pi
+    Hostname 192.168.0.2
+    User pi
+</code></pre></div>
+<p>Now you can test the easy connection with</p>
+<div class="highlight"><pre><span></span><code>ssh pi
 </code></pre></div>
 <p>All done! We should now be ready to run the pipeline!</p>
 
