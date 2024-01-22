@@ -668,7 +668,7 @@
 <h1 id="operation">Operation</h1>
 <p>We'll flesh out all the details on operation soon, but in the meantime here are the critical details.</p>
 <h2 id="turning-on-the-snap">Turning on the SNAP</h2>
-<p>To turn on the SNAP, SSH into the Pi (as discussed in the server setup), Then on the pi create (if it 
+<p>To turn on the SNAP, SSH into the Pi (as discussed in the server setup), Then on the pi create (if it
 doesn't already exist) a bash script called <code>snap.sh</code> with the following:</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -683,7 +683,7 @@ doesn't already exist) a bash script called <code>snap.sh</code> with the follow
 <span class="k">fi</span>
 <span class="nb">echo</span> <span class="s2">&quot;out&quot;</span> &gt; <span class="nv">$BASE_GPIO_PATH</span>/gpio<span class="nv">$PWN_PIN</span>/direction
 <span class="k">if</span> <span class="o">[[</span> -z <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span>
-<span class="k">then</span> 
+<span class="k">then</span>
     <span class="nb">echo</span> <span class="s2">&quot;Please pass `on` or `off` as an argument&quot;</span>
 <span class="k">else</span>
     <span class="k">case</span> <span class="nv">$1</span> <span class="k">in</span>
@@ -721,6 +721,9 @@ unused, non-privaleged port.</p>
 </code></pre></div>
 <p>Another example is perhaps you want to run a <a href="https://jupyter.org/hub">Jupypter Hub</a> instance on the GReX server. In that case, the website it is hosting is on the server itself, so you would run:</p>
 <div class="highlight"><pre><span></span><code>ssh -L <span class="m">8080</span>:localhost:80 username@grex-server-address
+</code></pre></div>
+<p>Another usefull one is access to the Prometheus time-series database used for monitoring. That is active on port <code>9090</code></p>
+<div class="highlight"><pre><span></span><code>ssh -L <span class="m">9090</span>:localhost:9090 username@grex-server-address
 </code></pre></div>
 
               
