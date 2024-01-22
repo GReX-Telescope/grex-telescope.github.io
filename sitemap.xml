@@ -46,6 +46,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://grex-telescope.github.io/software/data_processing/</loc>
+         <lastmod>2024-01-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://grex-telescope.github.io/software/operation/</loc>
          <lastmod>2024-01-22</lastmod>
          <changefreq>daily</changefreq>

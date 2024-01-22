@@ -562,6 +562,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_processing/" class="md-nav__link">
+        Data Processing
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -710,61 +724,6 @@ unused, non-privaleged port.</p>
 <p>Another example is perhaps you want to run a <a href="https://jupyter.org/hub">Jupypter Hub</a> instance on the GReX server. In that case, the website it is hosting is on the server itself, so you would run:</p>
 <div class="highlight"><pre><span></span><code>ssh -L <span class="m">8080</span>:localhost:80 username@grex-server-address
 </code></pre></div>
-<h1 id="data-processing">Data Processing</h1>
-<h2 id="voltage-dumps">Voltage Dumps</h2>
-<p>The voltage dumps are stored in <a href="https://www.unidata.ucar.edu/software/netcdf/">NetCDF</a>, a machine-independent
-data format intended for array-oriented scientific data such as ours. This format is a subset of HDF5 and is
-supported by all major programming languages. Not only that, but it is self describing! Our files contain axis
-variables on each dimension to remove any ambiguity as to which coordinate each data point refers to.</p>
-<p>Using the NetCDF binaries, we can quickly introspect a voltage dump to see how it is laid out</p>
-<div class="highlight"><pre><span></span><code>user@grex:/hdd/data/voltages$ ncdump -h grex_dump-20240122T055935.nc
-netcdf grex_dump-20240122T055935 <span class="o">{</span>
-dimensions:
-        <span class="nb">time</span> <span class="o">=</span> <span class="m">524288</span> <span class="p">;</span>
-        <span class="nv">pol</span> <span class="o">=</span> <span class="m">2</span> <span class="p">;</span>
-        <span class="nv">freq</span> <span class="o">=</span> <span class="m">2048</span> <span class="p">;</span>
-        <span class="nv">reim</span> <span class="o">=</span> <span class="m">2</span> <span class="p">;</span>
-variables:
-        double time<span class="o">(</span><span class="nb">time</span><span class="o">)</span> <span class="p">;</span>
-                time:units <span class="o">=</span> <span class="s2">&quot;Days&quot;</span> <span class="p">;</span>
-                time:long_name <span class="o">=</span> <span class="s2">&quot;Dynamic Barycentric Time (TDB) since J2000&quot;</span> <span class="p">;</span>
-        string pol<span class="o">(</span>pol<span class="o">)</span> <span class="p">;</span>
-                pol:long_name <span class="o">=</span> <span class="s2">&quot;Polarization&quot;</span> <span class="p">;</span>
-        double freq<span class="o">(</span>freq<span class="o">)</span> <span class="p">;</span>
-                freq:units <span class="o">=</span> <span class="s2">&quot;Megahertz&quot;</span> <span class="p">;</span>
-                freq:long_name <span class="o">=</span> <span class="s2">&quot;Frequency&quot;</span> <span class="p">;</span>
-        string reim<span class="o">(</span>reim<span class="o">)</span> <span class="p">;</span>
-                reim:long_name <span class="o">=</span> <span class="s2">&quot;Complex&quot;</span> <span class="p">;</span>
-        byte voltages<span class="o">(</span>time, pol, freq, reim<span class="o">)</span> <span class="p">;</span>
-                voltages:long_name <span class="o">=</span> <span class="s2">&quot;Channelized Voltages&quot;</span> <span class="p">;</span>
-                voltages:units <span class="o">=</span> <span class="s2">&quot;Volts&quot;</span> <span class="p">;</span>
-<span class="o">}</span>
-</code></pre></div>
-<p>Part of the trickiness here is HDF5 (and NetCDF by extension) doesn't support complex numbers, so the real and imaginary components are stored independently as another dimension.</p>
-<h3 id="python-reading-example">Python Reading Example</h3>
-<p>In Python, an excellent library for dealing with dimensional data is <a href="https://docs.xarray.dev/en/stable/getting-started-guide/index.html">xarray</a>. This
-library supports a large number of file formats, which are optional dependencies.
-For us, we need the netCDF4 python package, but it's probably best just to
-use the complete installation.</p>
-<p>It might also help if you read the xarray <a href="https://docs.xarray.dev/en/stable/user-guide/io.html">page on NetCDF</a>.</p>
-<p>Reading this file with</p>
-<div class="highlight"><pre><span></span><code><span class="n">xarray</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s2">&quot;grex_dump.nc&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>will associate all the axes to the appropriate dimensions, we just have to construct the complex numbers manually.</p>
-<p>A one-liner to do this would be</p>
-<div class="highlight"><pre><span></span><code><span class="n">voltages</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;voltages&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">reim</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;voltages&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">reim</span><span class="o">=</span><span class="s2">&quot;imaginary&quot;</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span>
-</code></pre></div>
-<p>This may take a while for large dumps though, and you may want to slice it up into chunks (not sure if there is an elegant way to do that here).</p>
-<p>But now you can do eveything xarray can do!</p>
-<p>A few examples:</p>
-<h4 id="stokes-i">Stokes I</h4>
-<p>Calculated by taking the time-average of the sum of magnitude squared of the voltages</p>
-<div class="highlight"><pre><span></span><code><span class="n">stokesi</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">voltages</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;pol&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h4 id="h1-line">H1 Line</h4>
-<p>Get the Stokes intensity around the H1 line (+/- 1 MHz) as a function a time</p>
-<div class="highlight"><pre><span></span><code><span class="n">h1</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">voltages</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;pol&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1421</span><span class="p">,</span><span class="mi">1419</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;freq&quot;</span><span class="p">)</span>
-</code></pre></div>
 
               
             </article>
@@ -794,13 +753,13 @@ use the complete installation.</p>
       
       
         
-        <a href="../../about/" class="md-footer__link md-footer__link--next" aria-label="Next: About" rel="next">
+        <a href="../data_processing/" class="md-footer__link md-footer__link--next" aria-label="Next: Data Processing" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              About
+              Data Processing
             </div>
           </div>
           <div class="md-footer__button md-icon">
