@@ -1052,6 +1052,8 @@ sudo mv consoles/ console_libraries/ /etc/prometheus/
 <div class="highlight"><pre><span></span><code>global:
   scrape_interval: 10s
   evaluation_interval: 10s
+  external_labels:
+    origin_prometheus: &lt;some unique identifer&gt;
 scrape_configs:
   - job_name: &quot;prometheus&quot;
     static_configs:
