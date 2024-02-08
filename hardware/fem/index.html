@@ -725,14 +725,14 @@ for environmental RFI levels.</p>
 <h3 id="cli-example">CLI Example</h3>
 <p>To use the CLI program, connect the FEM to a serial port either with a USB to serial
 adapter or directly to a hardware UART port (like on the Raspberry Pi).</p>
-<div class="highlight"><pre><span></span><code>Usage: mnc-cli &lt;PORT&gt; &lt;COMMAND&gt;
+<div class="highlight"><pre><span></span><code>Usage: cli &lt;PORT&gt; &lt;COMMAND&gt;
 
 Commands:
-  monitor      Gets monitor data from the FEM
-  lna          Controls the power and calibration state of the LNA
-  good-if      Sets the IF <span class="s2">&quot;power good&quot;</span> threshold
-  attenuation  Sets the attenuation level <span class="k">in</span> dB <span class="o">(</span><span class="m">0</span> to <span class="m">31</span>.5<span class="o">)</span>
-  <span class="nb">help</span>         Print this message or the <span class="nb">help</span> of the given subcommand<span class="o">(</span>s<span class="o">)</span>
+  mon    Gets monitor data from the FEM
+  lna    Controls the power of the LNA
+  <span class="k">if</span>     Sets the IF <span class="s2">&quot;power good&quot;</span> threshold
+  atten  Sets the attenuation level <span class="k">in</span> dB <span class="o">(</span><span class="m">0</span> to <span class="m">31</span>.5<span class="o">)</span>
+  <span class="nb">help</span>   Print this message or the <span class="nb">help</span> of the given subcommand<span class="o">(</span>s<span class="o">)</span>
 
 Arguments:
   &lt;PORT&gt;  Serial port <span class="k">for</span> the FEM
@@ -742,13 +742,13 @@ Options:
   -V, --version  Print version
 </code></pre></div>
 <p>To set the power state of the LNAs, use:</p>
-<div class="highlight"><pre><span></span><code>./mnc-cli lna power ch&lt;<span class="m">1</span><span class="p">|</span><span class="m">2</span>&gt; &lt;enabled<span class="p">|</span>disabled&gt;
+<div class="highlight"><pre><span></span><code>./cli &lt;serial-port&gt; lna ch&lt;<span class="m">1</span><span class="p">|</span><span class="m">2</span>&gt; &lt;enabled<span class="p">|</span>disabled&gt;
 </code></pre></div>
 <p>To set the attenuation:</p>
-<div class="highlight"><pre><span></span><code>./mnc-cli attenuation &lt;<span class="m">0</span>-31.5&gt;
+<div class="highlight"><pre><span></span><code>./cli atten &lt;<span class="m">0</span>-31.5&gt;
 </code></pre></div>
 <p>To grab the monitor data:</p>
-<div class="highlight"><pre><span></span><code>./mnc-cli monitor
+<div class="highlight"><pre><span></span><code>./cli mon
 </code></pre></div>
 <h3 id="physical-interface">Physical Interface</h3>
 <p>There are eight LEDs on the front panel. Four red LEDs to indicate power
