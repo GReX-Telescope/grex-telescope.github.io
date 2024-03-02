@@ -553,9 +553,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#guix" class="md-nav__link">
-    Guix
+  <a href="#gpu-drivers-cuda" class="md-nav__link">
+    GPU Drivers / CUDA
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-dependencies" class="md-nav__link">
+    Pipeline Dependencies
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#psrdada" class="md-nav__link">
+    PSRDADA
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heimdall" class="md-nav__link">
+    Heimdall
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -748,9 +775,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#guix" class="md-nav__link">
-    Guix
+  <a href="#gpu-drivers-cuda" class="md-nav__link">
+    GPU Drivers / CUDA
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-dependencies" class="md-nav__link">
+    Pipeline Dependencies
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#psrdada" class="md-nav__link">
+    PSRDADA
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heimdall" class="md-nav__link">
+    Heimdall
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -965,33 +1019,121 @@ ethtool -A enp1s0f0 tx on
 <div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> rc-local
 </code></pre></div>
 <p>Finally, reboot</p>
-<h2 id="guix">Guix</h2>
-<p>We use the deterministic pacakge manager Guix to deal with the more tricky to install things, so we never have to worry about stuff not building.</p>
-<p>You can install this with the Ubuntu package manager</p>
-<div class="highlight"><pre><span></span><code>sudo apt-get install guix
+<h2 id="gpu-drivers-cuda">GPU Drivers / CUDA</h2>
+<p>Heimdall (the pulse detection part of our pipeline) relies on the CUDA toolkit. Let's install that now (version 12.3)</p>
+<div class="highlight"><pre><span></span><code>wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt-get update
+sudo apt-get -y install cuda-toolkit-12-3
 </code></pre></div>
-<p>Then, we will add the repository of our pacakges by creating the following file <code>~/.config/guix/channels.scm</code></p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nv">channel</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nv">name</span><span class="w"> </span><span class="ss">&#39;guix-grex</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nv">url</span><span class="w"> </span><span class="s">&quot;https://github.com/GReX-Telescope/guix-grex.git&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">(</span><span class="nv">branch</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">))</span><span class="w"></span>
-<span class="w">      </span><span class="nv">%default-channels</span><span class="p">)</span><span class="w"></span>
+<p>And then install the open-source kernel drivers (Version 545) (overwriting previously installed ones)</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install -y nvidia-kernel-open-545
+sudo apt-get install -y cuda-drivers-545
 </code></pre></div>
-<p>And then have it self-update with</p>
-<div class="highlight"><pre><span></span><code>guix pull
+<p>You may want to run the following to cleanup old dependencies/driver versions that may have been preinstalled</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get autoremove
 </code></pre></div>
-<p>This step may take a while.</p>
-<p>Create (or add to) <code>~/.bash_profile</code></p>
-<div class="highlight"><pre><span></span><code><span class="nv">GUIX_PROFILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.guix-profile&quot;</span>
-. <span class="s2">&quot;</span><span class="nv">$GUIX_PROFILE</span><span class="s2">/etc/profile&quot;</span>
-<span class="k">if</span> <span class="o">[</span> -f ~/.bashrc <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-    <span class="nb">source</span> ~/.bashrc
-<span class="k">fi</span>
+<p>Reboot. Then run <code>nvidia-smi</code> to see if the CUDA version and Driver version came up correctly.</p>
+<p>Finally, add the following to <code>~/.bashrc</code> to let our use use CUDA</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># CUDA 12.3</span>
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>/usr/local/cuda-12.3/bin<span class="si">${</span><span class="nv">PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">PATH</span><span class="si">}}</span>
+<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/cuda-12.3/lib64<span class="se">\</span>
+                         <span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}}</span>
 </code></pre></div>
-<p>In here, we're also sourcing <code>~/.bashrc</code> so we get it over ssh.</p>
-<p>Finally, install the pipeline dependencies with:</p>
-<div class="highlight"><pre><span></span><code>guix install psrdada snap_bringup heimdall-astro
+<p>and <code>source ~/.bashrc</code> or relog.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you change CUDA versions, you'll need to update these paths!</p>
+</div>
+<h2 id="pipeline-dependencies">Pipeline Dependencies</h2>
+<h3 id="psrdada">PSRDADA</h3>
+<p>We use <a href="https://psrdada.sourceforge.net/">PSRDADA</a> to connect the packet capture and first stage processing pipeline <a href="https://github.com/GReX-Telescope/GReX-T0">T0</a> to the pulse detection framework <a href="https://sourceforge.net/p/heimdall-astro/wiki/Home/">heimdall</a>. This is a library we need to install.</p>
+<p>We will build a few programs, so might as well create a directory to do this in to keep our home directory organized.</p>
+<div class="highlight"><pre><span></span><code>mkdir src <span class="o">&amp;&amp;</span> <span class="nb">cd</span> src
 </code></pre></div>
+<p>Then clone our fork of PSRDADA</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/GReX-Telescope/psrdada <span class="o">&amp;&amp;</span> <span class="nb">cd</span> psrdada
+</code></pre></div>
+<p>Now, install some build dependencies</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install build-essential cmake -y
+</code></pre></div>
+<p>Then, build PSRDADA</p>
+<div class="highlight"><pre><span></span><code>mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+cmake ..
+make -j<span class="k">$(</span>nproc<span class="k">)</span>
+sudo make install
+</code></pre></div>
+<p>This will install the control programs and libraries to <code>/usr/local/bin</code> and <code>/usr/local/lib</code>, respectively.</p>
+<p>We have to add the latter to out linker path, by adding the following to <code>~./bashrc</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># PSRDADA</span>
+<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/lib<span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}}</span>
+</code></pre></div>
+<p>Then, relog once agian.</p>
+<h3 id="heimdall">Heimdall</h3>
+<p>Similar process to build the pulse-detection software, heimdall.
+First, clone our fork in our <code>~/src</code> directory:</p>
+<div class="highlight"><pre><span></span><code>git clone --recurse-submodules  https://github.com/GReX-Telescope/heimdall-astro
+<span class="nb">cd</span> heimdall-astro
+</code></pre></div>
+<p>Install some build dependencies</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install libboost-all-dev -y
+</code></pre></div>
+<p>Then build</p>
+<div class="highlight"><pre><span></span><code>mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+cmake ..
+make -j<span class="k">$(</span>nproc<span class="k">)</span>
+</code></pre></div>
+<p>Run the test dedispersion program to make sure everything seemed to work</p>
+<div class="highlight"><pre><span></span><code>./dedisp/testdedisp
+</code></pre></div>
+<p>which should return</p>
+<div class="highlight"><pre><span></span><code>----------------------------- INPUT DATA ---------------------------------
+Frequency of highest chanel (MHz)            : 1581.0000
+Bandwidth (MHz)                              : 100.00
+NCHANS (Channel Width [MHz])                 : 1024 (-0.097656)
+Sample time (after downsampling by 1)        : 0.000250
+Observation duration (s)                     : 30.000000 (119999 samples)
+Data RMS ( 8 bit input data)                 : 25.000000
+Input data array size                        : 468 MB
+
+Embedding signal
+----------------------------- INJECTED SIGNAL  ----------------------------
+Pulse time at f0 (s)                      : 3.141590 (sample 12566)
+Pulse DM (pc/cm^3)                        : 41.159000
+Signal Delays : 0.000000, 0.000008, 0.000017 ... 0.009530
+Rawdata Mean (includes signal)    : -0.002202
+Rawdata StdDev (includes signal)  : 25.001451
+Pulse S/N (per frequency channel) : 1.000000
+Quantizing array
+Quantized data Mean (includes signal)    : 127.497818
+Quantized data StdDev (includes signal)  : 25.003092
+
+Init GPU
+Create plan
+Gen DM list
+----------------------------- DM COMPUTATIONS  ----------------------------
+Computing 32 DMs from 2.000000 to 102.661667 pc/cm^3
+Max DM delay is 95 samples (0 seconds)
+Computing 119904 out of 119999 total samples (99.92% efficiency)
+Output data array size : 14 MB
+
+Compute on GPU
+Dedispersion took 0.02 seconds
+Output RMS                               : 0.376464
+Output StdDev                            : 0.002307
+DM trial 11 (37.681 pc/cm^3), Samp 12566 (3.141500 s): 0.390678 (6.16 sigma)
+DM trial 11 (37.681 pc/cm^3), Samp 12567 (3.141750 s): 0.398160 (9.41 sigma)
+DM trial 11 (37.681 pc/cm^3), Samp 12568 (3.142000 s): 0.393198 (7.25 sigma)
+DM trial 11 (37.681 pc/cm^3), Samp 12569 (3.142250 s): 0.391713 (6.61 sigma)
+DM trial 12 (40.926 pc/cm^3), Samp 12566 (3.141500 s): 0.441719 (28.29 sigma)
+DM trial 13 (44.171 pc/cm^3), Samp 12564 (3.141000 s): 0.400574 (10.45 sigma)
+DM trial 13 (44.171 pc/cm^3), Samp 12565 (3.141250 s): 0.403097 (11.55 sigma)
+Dedispersion successful.
+</code></pre></div>
+<p>Finally, install this into our path with</p>
+<div class="highlight"><pre><span></span><code>sudo make install
+</code></pre></div>
+<p>The <code>heimdall</code> executable should now be available for the pipeline as well as offline analysis.</p>
 <h2 id="rust">Rust</h2>
 <p>Many parts of the pipeline software are written in the Rust programming language.
 We will be building this software from scratch, so we need to install the rust compiler and its tooling.
@@ -1003,7 +1145,7 @@ This is easy enough with <a href="https://rustup.rs/">rustup</a></p>
 <div class="highlight"><pre><span></span><code>curl --proto <span class="s1">&#39;=https&#39;</span> --tlsv1.2 -sSf https://sh.rustup.rs <span class="p">|</span> sh
 </code></pre></div>
 <h2 id="python">Python</h2>
-<p>To get out of version hell for python stuff <em>not</em> packaged with guix, we're using <a href="https://python-poetry.org/">Poetry</a>. To install it, we will:</p>
+<p>To get out of version hell for python stuff, we're using <a href="https://python-poetry.org/">Poetry</a>. To install it, we will:</p>
 <div class="highlight"><pre><span></span><code>curl -sSL https://install.python-poetry.org <span class="p">|</span> python3 -
 </code></pre></div>
 <p>We need to make a few adjustments to <code>~/.bashrc</code> to correct the paths and fix a bug. Append the following to the end.</p>
