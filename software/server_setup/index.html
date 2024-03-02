@@ -1037,8 +1037,7 @@ sudo apt-get install -y cuda-drivers-545
 <p>Finally, add the following to <code>~/.bashrc</code> to let our use use CUDA</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># CUDA 12.3</span>
 <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>/usr/local/cuda-12.3/bin<span class="si">${</span><span class="nv">PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">PATH</span><span class="si">}}</span>
-<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/cuda-12.3/lib64<span class="se">\</span>
-                         <span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}}</span>
+<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/usr/local/cuda-12.3/lib64
 </code></pre></div>
 <p>and <code>source ~/.bashrc</code> or relog.</p>
 <div class="admonition warning">
@@ -1066,7 +1065,7 @@ sudo make install
 <p>This will install the control programs and libraries to <code>/usr/local/bin</code> and <code>/usr/local/lib</code>, respectively.</p>
 <p>We have to add the latter to out linker path, by adding the following to <code>~./bashrc</code></p>
 <div class="highlight"><pre><span></span><code><span class="c1"># PSRDADA</span>
-<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/lib<span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}}</span>
+<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/usr/local/lib
 </code></pre></div>
 <p>Then, relog once agian.</p>
 <h3 id="heimdall">Heimdall</h3>
