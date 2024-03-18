@@ -581,6 +581,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hdf5netcdf" class="md-nav__link">
+    HDF5/NetCDF
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -799,6 +806,13 @@
           <li class="md-nav__item">
   <a href="#heimdall" class="md-nav__link">
     Heimdall
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hdf5netcdf" class="md-nav__link">
+    HDF5/NetCDF
   </a>
   
 </li>
@@ -1050,17 +1064,19 @@ sudo apt-get install -y cuda-drivers-545
 <p>We will build a few programs, so might as well create a directory to do this in to keep our home directory organized.</p>
 <div class="highlight"><pre><span></span><code>mkdir src <span class="o">&amp;&amp;</span> <span class="nb">cd</span> src
 </code></pre></div>
-<p>Then clone our fork of PSRDADA</p>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/GReX-Telescope/psrdada <span class="o">&amp;&amp;</span> <span class="nb">cd</span> psrdada
+<p>Then clone PSRDADA</p>
+<div class="highlight"><pre><span></span><code>git clone git://git.code.sf.net/p/psrdada/code psrdada <span class="o">&amp;&amp;</span> <span class="nb">cd</span> psrdada
+<span class="c1"># Last tested version, bump as appropriate</span>
+git checkout 008afa7
 </code></pre></div>
 <p>Now, install some build dependencies</p>
-<div class="highlight"><pre><span></span><code>sudo apt-get install build-essential cmake -y
+<div class="highlight"><pre><span></span><code>sudo apt-get install build-essential cmake ninja-build -y
 </code></pre></div>
 <p>Then, build PSRDADA</p>
 <div class="highlight"><pre><span></span><code>mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
-cmake ..
-make -j<span class="k">$(</span>nproc<span class="k">)</span>
-sudo make install
+cmake -GNinja ..
+ninja
+sudo ninja install
 </code></pre></div>
 <p>This will install the control programs and libraries to <code>/usr/local/bin</code> and <code>/usr/local/lib</code>, respectively.</p>
 <p>We have to add the latter to out linker path, by adding the following to <code>~./bashrc</code></p>
@@ -1079,8 +1095,8 @@ First, clone our fork in our <code>~/src</code> directory:</p>
 </code></pre></div>
 <p>Then build</p>
 <div class="highlight"><pre><span></span><code>mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
-cmake ..
-make -j<span class="k">$(</span>nproc<span class="k">)</span>
+cmake -GNinja ..
+ninja
 </code></pre></div>
 <p>Run the test dedispersion program to make sure everything seemed to work</p>
 <div class="highlight"><pre><span></span><code>./dedisp/testdedisp
@@ -1130,9 +1146,15 @@ DM trial 13 (44.171 pc/cm^3), Samp 12565 (3.141250 s): 0.403097 (11.55 sigma)
 Dedispersion successful.
 </code></pre></div>
 <p>Finally, install this into our path with</p>
-<div class="highlight"><pre><span></span><code>sudo make install
+<div class="highlight"><pre><span></span><code>sudo ninja install
 </code></pre></div>
 <p>The <code>heimdall</code> executable should now be available for the pipeline as well as offline analysis.</p>
+<h3 id="hdf5netcdf">HDF5/NetCDF</h3>
+<p>We use the fantastic <a href="https://www.unidata.ucar.edu/software/netcdf/">netcdf</a> library to write out voltage
+data. To do this, we need to statically link netcdf (and it's dependent HDF5) at compile time. As such, we
+have to install these libraries systemw-wide.</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install libhdf5-dev libnetcdf-dev -y
+</code></pre></div>
 <h2 id="rust">Rust</h2>
 <p>Many parts of the pipeline software are written in the Rust programming language.
 We will be building this software from scratch, so we need to install the rust compiler and its tooling.
