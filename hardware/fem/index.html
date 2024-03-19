@@ -367,8 +367,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cli-example" class="md-nav__link">
-    CLI Example
+  <a href="#cli" class="md-nav__link">
+    CLI
   </a>
   
 </li>
@@ -645,8 +645,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cli-example" class="md-nav__link">
-    CLI Example
+  <a href="#cli" class="md-nav__link">
+    CLI
   </a>
   
 </li>
@@ -699,7 +699,7 @@ Additionally, this module provides rudimentary monitor and control support.</p>
 <p>The hardware design itself is implemented in the free <a href="https://www.kicad.org/">KiCAD</a>
 program and is available <a href="https://github.com/GReX-Telescope/FrontendModule">here</a>.
 The current hardware uses ENIG to help reflow of the fine-pitch components.
-Additionally, it utilizes the low-loss RO4003C substrate in a custom 4-layer stackup. </p>
+Additionally, it utilizes the low-loss RO4003C substrate in a custom 4-layer stackup.</p>
 <ul>
 <li>Schematics</li>
 <li>BOM</li>
@@ -720,11 +720,12 @@ controlling.</p>
 <p>With this software, there is control for enabling/disabling the LNA bias and
 setting the interstage IF attenuator. For the digital attenuator,
 we can set attenuation (and therefore change the total gain) from 0 dB to 31.5 dB.
-This attenuator is used to maximize the dynamic range of the ADC and can be set 
+This attenuator is used to maximize the dynamic range of the ADC and can be set
 for environmental RFI levels.</p>
-<h3 id="cli-example">CLI Example</h3>
+<h3 id="cli">CLI</h3>
 <p>To use the CLI program, connect the FEM to a serial port either with a USB to serial
-adapter or directly to a hardware UART port (like on the Raspberry Pi).</p>
+adapter or directly to a hardware UART port (like on the Raspberry Pi). If the pi doesn't
+have the cli program already copied over, it can be found <a href="../assets/cli">here</a>.</p>
 <div class="highlight"><pre><span></span><code>Usage: cli &lt;PORT&gt; &lt;COMMAND&gt;
 
 Commands:
