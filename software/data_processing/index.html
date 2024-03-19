@@ -696,17 +696,17 @@ data format intended for array-oriented scientific data such as ours. This forma
 supported by all major programming languages. Not only that, but it is self describing! Our files contain axis
 variables on each dimension to remove any ambiguity as to which coordinate each data point refers to.</p>
 <p>Using the NetCDF binaries, we can quickly introspect a voltage dump to see how it is laid out</p>
-<div class="highlight"><pre><span></span><code>user@grex:/hdd/data/voltages$ ncdump -h grex_dump-20240122T055935.nc
-netcdf grex_dump-20240122T055935 <span class="o">{</span>
+<div class="highlight"><pre><span></span><code>user@grex:/hdd/data/voltages$ ncdump -h grex_dump-20240319T182522.nc
+netcdf grex_dump-20240319T182522 <span class="o">{</span>
 dimensions:
-        <span class="nb">time</span> <span class="o">=</span> <span class="m">524288</span> <span class="p">;</span>
+        <span class="nb">time</span> <span class="o">=</span> <span class="m">1048576</span> <span class="p">;</span>
         <span class="nv">pol</span> <span class="o">=</span> <span class="m">2</span> <span class="p">;</span>
         <span class="nv">freq</span> <span class="o">=</span> <span class="m">2048</span> <span class="p">;</span>
         <span class="nv">reim</span> <span class="o">=</span> <span class="m">2</span> <span class="p">;</span>
 variables:
         double time<span class="o">(</span><span class="nb">time</span><span class="o">)</span> <span class="p">;</span>
                 time:units <span class="o">=</span> <span class="s2">&quot;Days&quot;</span> <span class="p">;</span>
-                time:long_name <span class="o">=</span> <span class="s2">&quot;Dynamic Barycentric Time (TDB) since J2000&quot;</span> <span class="p">;</span>
+                time:long_name <span class="o">=</span> <span class="s2">&quot;TAI days since the MJD Epoch&quot;</span> <span class="p">;</span>
         string pol<span class="o">(</span>pol<span class="o">)</span> <span class="p">;</span>
                 pol:long_name <span class="o">=</span> <span class="s2">&quot;Polarization&quot;</span> <span class="p">;</span>
         double freq<span class="o">(</span>freq<span class="o">)</span> <span class="p">;</span>
@@ -738,9 +738,9 @@ use the complete installation.</p>
 <p>A few examples:</p>
 <h4 id="stokes-i">Stokes I</h4>
 <p>Calculated by taking the time-average of the sum of magnitude squared of the voltages</p>
-<p><div class="highlight"><pre><span></span><code><span class="n">stokesi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">voltages</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;pol&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;reim&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">stokesi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">voltages</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;pol&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;reim&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
 </code></pre></div>
-Note that the original voltages are in "int8" format which is not enough to store squared voltages, and thus we are converting to "int32".</p>
+<p>Note that the original voltages are in "int8" format which is not enough to store squared voltages, and thus we are converting to "int32".</p>
 <h4 id="h1-line">H1 Line</h4>
 <p>Get the Stokes intensity around the H1 line (+/- 1 MHz) as a function a time</p>
 <div class="highlight"><pre><span></span><code><span class="n">h1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">voltages</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;pol&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1421</span><span class="p">,</span><span class="mi">1419</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;freq&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
