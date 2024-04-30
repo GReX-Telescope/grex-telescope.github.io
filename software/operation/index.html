@@ -553,6 +553,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pulse-injection" class="md-nav__link">
+    Pulse Injection
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -651,6 +658,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pulse-injection" class="md-nav__link">
+    Pulse Injection
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -725,6 +739,48 @@ unused, non-privaleged port.</p>
 <p>Another usefull one is access to the Prometheus time-series database used for monitoring. That is active on port <code>9090</code></p>
 <div class="highlight"><pre><span></span><code>ssh -L <span class="m">9090</span>:localhost:9090 username@grex-server-address
 </code></pre></div>
+<h2 id="pulse-injection">Pulse Injection</h2>
+<p>If you need to generate and inject fake pulses into raw voltages to test the pipeline, Liam Connor's <a href="https://github.com/liamconnor/injectfrb/blob/master/injectfrb/simulate_frb.py">injection codes</a> contain all the relevant tools. In a Python Jupyter notebook, you can import this Python script and use the functions within to generate a fake pulse and write it to an output .dat file.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">simulate_frb</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">8.192e-6</span>
+<span class="n">width_sec</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">dt</span> <span class="c1"># depending on your preferred pulse width</span>
+<span class="n">Nfreq</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">simulate_frb</span><span class="o">.</span><span class="n">gen_simulated_frb</span><span class="p">(</span><span class="n">NFREQ</span><span class="o">=</span><span class="n">Nfreq</span><span class="p">,</span>
+    <span class="n">NTIME</span><span class="o">=</span><span class="mi">16384</span><span class="p">,</span>
+    <span class="n">sim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">fluence</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="c1"># This controls the pulse SNR</span>
+    <span class="n">spec_ind</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="n">width_sec</span><span class="p">,</span>
+    <span class="n">dm</span><span class="o">=</span><span class="mf">100.</span><span class="p">,</span> <span class="c1"># dispersion measure</span>
+    <span class="n">background_noise</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">16384</span><span class="p">]),</span>
+    <span class="n">delta_t</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">plot_burst</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">freq</span><span class="o">=</span><span class="p">(</span><span class="mf">1530.0</span><span class="p">,</span> <span class="mf">1280.0</span><span class="p">),</span>
+    <span class="n">FREQ_REF</span><span class="o">=</span><span class="mf">1405.0</span><span class="p">,</span>
+    <span class="n">scintillate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">scat_tau_ref</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">disp_ind</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">conv_dmsmear</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Before writing to an output file, you might want to check what the pulse looks like and its histogram distribution, ensuring it’s not all zeros due to conversion to int8 (bit type of raw voltages).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1">### also, visualize the pulse itself</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">),</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p>If the pulse looks reasonable, we can convert to <code>int8</code> type and write to an output .dat file.
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;test_injpulse0.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
+</code></pre></div></p>
+<p>Move this .dat file to <code>~/grex/pipeline/fake/</code>, the specified directory in <code>grex.sh</code>, to actually inject the pulse. Then you could change the injection cadence (in seconds) in <code>~/grex/pipeline/.env</code> by adding the following line.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">injection_cadence</span><span class="o">=</span><span class="m">300</span>
+</code></pre></div>
+<p>Now you are good to go.</p>
 
               
             </article>
