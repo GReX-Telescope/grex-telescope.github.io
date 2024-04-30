@@ -82,3 +82,62 @@ Another usefull one is access to the Prometheus time-series database used for mo
 ```shell
 ssh -L 9090:localhost:9090 username@grex-server-address
 ```
+
+## Pulse Injection
+
+If you need to generate and inject fake pulses into raw voltages to test the pipeline, Liam Connor's [injection codes](https://github.com/liamconnor/injectfrb/blob/master/injectfrb/simulate_frb.py) contain all the relevant tools. In a Python Jupyter notebook, you can import this Python script and use the functions within to generate a fake pulse and write it to an output .dat file.
+
+```python
+import simulate_frb
+dt = 8.192e-6
+width_sec = 2*dt # depending on your preferred pulse width
+Nfreq = 2048
+data, params = simulate_frb.gen_simulated_frb(NFREQ=Nfreq,
+    NTIME=16384,
+    sim=True,
+    fluence=70, # This controls the pulse SNR
+    spec_ind=0.0,
+    width=width_sec,
+    dm=100., # dispersion measure
+    background_noise=np.zeros([2048, 16384]),
+    delta_t=dt,
+    plot_burst=False,
+    freq=(1530.0, 1280.0),
+    FREQ_REF=1405.0,
+    scintillate=False,
+    scat_tau_ref=0.0,
+    disp_ind=2.0,
+    conv_dmsmear=False,
+)
+```
+
+Before writing to an output file, you might want to check what the pulse looks like and its histogram distribution, ensuring it’s not all zeros due to conversion to int8 (bit type of raw voltages).
+
+```python
+from matplotlib import pyplot as plt
+plt.hist(data.astype(np.int8).flatten(), bins=50)
+plt.semilogy()
+plt.show()
+### also, visualize the pulse itself
+plt.imshow(data.astype(np.int8), aspect='auto')
+plt.colorbar()
+plt.show()
+```
+
+If the pulse looks reasonable, we can convert to `int8` type and write to an output .dat file.
+```python
+with open('test_injpulse0.dat', 'wb') as f:
+    f.write(data.astype(np.int8).tobytes())
+```
+
+Move this .dat file to `~/grex/pipeline/fake/`, the specified directory in `grex.sh`, to actually inject the pulse. Then you could change the injection cadence (in seconds) in `~/grex/pipeline/.env` by adding the following line.
+
+```shell
+injection_cadence=300
+```
+
+Now you are good to go.
+
+
+
+
