@@ -1,8 +1,8 @@
 # The Box
 
 Here one can find documentation re: the GReX box, including cables, 
-routing, etc. A 3D PDF is available for download [here](/../assets/THE_BOX_2023Nov27.pdf).
-The BOM is available [here](/../assets/GREX_Enclosure_BOM_Nov_27_2023.xlsx)
+routing, etc. A 3D PDF is available for download [here](/../assets/THE_BOX_2023Nov27.PDF).
+The BOM is available [here](/../assets/GReX_Enclosure_BOM.pdf)
 
 ## Interface Plate
 
