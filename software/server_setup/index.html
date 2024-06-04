@@ -615,9 +615,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#databases-and-metrics-collection" class="md-nav__link">
+    Databases and Metrics Collection
+  </a>
+  
+    <nav class="md-nav" aria-label="Databases and Metrics Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#prometheus" class="md-nav__link">
     Prometheus
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opentelemetry" class="md-nav__link">
+    OpenTelemetry
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -844,9 +864,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#databases-and-metrics-collection" class="md-nav__link">
+    Databases and Metrics Collection
+  </a>
+  
+    <nav class="md-nav" aria-label="Databases and Metrics Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#prometheus" class="md-nav__link">
     Prometheus
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opentelemetry" class="md-nav__link">
+    OpenTelemetry
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1186,7 +1226,9 @@ git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 <p>Lastly, you'll need to install the <code>parallel</code> package</p>
 <div class="highlight"><pre><span></span><code>sudo apt install parallel -y
 </code></pre></div>
-<h2 id="prometheus">Prometheus</h2>
+<h2 id="databases-and-metrics-collection">Databases and Metrics Collection</h2>
+<p>TODO: Really this should all be orchestrated with something like docker compose.</p>
+<h3 id="prometheus">Prometheus</h3>
 <p>To save data about the server (CPU usage, RAM usage, etc) and to collect monitoring metrics from various pieces of pipeline software, we use the <a href="https://prometheus.io/">prometheus</a> time series database. Each server will host its own database and <em>push</em> updates to the monitoring frontend Grafana.</p>
 <p>First, create a new group and user</p>
 <div class="highlight"><pre><span></span><code>sudo groupadd --system prometheus
@@ -1267,6 +1309,8 @@ sudo systemctl <span class="nb">enable</span> prometheus
 <p>Now we will install the node-exporter, which gives us metrics of the computer itself.</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install prometheus-node-exporter
 </code></pre></div>
+<h3 id="opentelemetry">OpenTelemetry</h3>
+<p>TODO</p>
 <h2 id="pi-ssh">Pi SSH</h2>
 <p>One nice last thing will be to configure easy access to the Raspberry Pi's SSH. We can do that by creating a passwordless SSH key and installing it on the pi. We're going to be behind ssh anyway, and the Pi isn't public-facing, so this is a safe thing to do.</p>
 <p>On the server, generate a new ssh keypair with</p>
