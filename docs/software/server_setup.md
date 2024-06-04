@@ -478,7 +478,11 @@ Lastly, you'll need to install the `parallel` package
 sudo apt install parallel -y
 ```
 
-## Prometheus
+## Databases and Metrics Collection
+
+TODO: Really this should all be orchestrated with something like docker compose.
+
+### Prometheus
 
 To save data about the server (CPU usage, RAM usage, etc) and to collect monitoring metrics from various pieces of pipeline software, we use the [prometheus](https://prometheus.io/) time series database. Each server will host its own database and _push_ updates to the monitoring frontend Grafana.
 
@@ -594,6 +598,10 @@ Now we will install the node-exporter, which gives us metrics of the computer it
 ```sh
 sudo apt-get install prometheus-node-exporter
 ```
+
+### OpenTelemetry
+
+TODO
 
 ## Pi SSH
 
