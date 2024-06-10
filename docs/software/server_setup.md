@@ -484,7 +484,7 @@ sudo apt install parallel -y
 
 Following [docker's documentation](https://docs.docker.com/engine/install/ubuntu/), install docker the usual way as that is what orchestrates the databases, log aggregation, and communication to grafana.
 
-## Observability Stack
+### Observability Stack
 
 Somewhere obvious (like the home dir), clone [the stack](https://github.com/GReX-Telescope/grex_observability).
 Copy `alloy.env.example` to `alloy.env` and fill out the sections according to your grafana configuration.
