@@ -623,21 +623,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#prometheus" class="md-nav__link">
-    Prometheus
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#opentelemetry" class="md-nav__link">
-    OpenTelemetry
+  <a href="#docker" class="md-nav__link">
+    Docker
   </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-stack" class="md-nav__link">
+    Observability Stack
+  </a>
   
 </li>
       
@@ -872,21 +872,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#prometheus" class="md-nav__link">
-    Prometheus
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#opentelemetry" class="md-nav__link">
-    OpenTelemetry
+  <a href="#docker" class="md-nav__link">
+    Docker
   </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-stack" class="md-nav__link">
+    Observability Stack
+  </a>
   
 </li>
       
@@ -1227,90 +1227,19 @@ git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 <div class="highlight"><pre><span></span><code>sudo apt install parallel -y
 </code></pre></div>
 <h2 id="databases-and-metrics-collection">Databases and Metrics Collection</h2>
-<p>TODO: Really this should all be orchestrated with something like docker compose.</p>
-<h3 id="prometheus">Prometheus</h3>
-<p>To save data about the server (CPU usage, RAM usage, etc) and to collect monitoring metrics from various pieces of pipeline software, we use the <a href="https://prometheus.io/">prometheus</a> time series database. Each server will host its own database and <em>push</em> updates to the monitoring frontend Grafana.</p>
-<p>First, create a new group and user</p>
-<div class="highlight"><pre><span></span><code>sudo groupadd --system prometheus
-sudo useradd -s /sbin/nologin --system -g prometheus prometheus
+<h3 id="docker">Docker</h3>
+<p>Following <a href="https://docs.docker.com/engine/install/ubuntu/">docker's documentation</a>, install docker the usual way as that is what orchestrates the databases, log aggregation, and communication to grafana.</p>
+<h2 id="observability-stack">Observability Stack</h2>
+<p>Somewhere obvious (like the home dir), clone <a href="https://github.com/GReX-Telescope/grex_observability">the stack</a>.
+Copy <code>alloy.env.example</code> to <code>alloy.env</code> and fill out the sections according to your grafana configuration.
+Set docker to run as a systemd service with</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> docker
 </code></pre></div>
-<p>Next, we create the path for the database. Puget setup the system so the large storage drive is mounted at <code>/hdd</code>. We will keep the database there.</p>
-<div class="highlight"><pre><span></span><code>sudo mkdir /hdd/prometheus
+<p>if you didn't already in the installation.</p>
+<p>And then finally, start the stack with</p>
+<div class="highlight"><pre><span></span><code>sudo docker compose up -d
 </code></pre></div>
-<p>Prometheus primary configuration files directory is /etc/prometheus/. It will have some sub-directories:</p>
-<div class="highlight"><pre><span></span><code><span class="k">for</span> i <span class="k">in</span> rules rules.d files_sd<span class="p">;</span> <span class="k">do</span> sudo mkdir -p /etc/prometheus/<span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="k">done</span>
-</code></pre></div>
-<p>Next, get a copy of the prometheus binaries, extract, and move into that dir</p>
-<div class="highlight"><pre><span></span><code>mkdir -p /tmp/prometheus <span class="o">&amp;&amp;</span> <span class="nb">cd</span> /tmp/prometheus
-curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest <span class="p">|</span> grep browser_download_url <span class="p">|</span> grep linux-amd64 <span class="p">|</span> cut -d <span class="s1">&#39;&quot;&#39;</span> -f <span class="m">4</span> <span class="p">|</span> wget -qi -
-tar xvf prometheus*.tar.gz
-<span class="nb">cd</span> prometheus*/
-</code></pre></div>
-<p>Install the files by moving to <code>/usr/local/bin</code></p>
-<div class="highlight"><pre><span></span><code>sudo mv prometheus promtool /usr/local/bin/
-</code></pre></div>
-<p>Move Prometheus configuration files to <code>etc</code></p>
-<div class="highlight"><pre><span></span><code>sudo mv prometheus.yml /etc/prometheus/prometheus.yml
-sudo mv consoles/ console_libraries/ /etc/prometheus/
-</code></pre></div>
-<p>Now, we configure. Open up <code>/etc/prometheus/prometheus.yml</code> and edit to contain:</p>
-<div class="highlight"><pre><span></span><code>global:
-  scrape_interval: 10s
-  evaluation_interval: 10s
-  external_labels:
-    origin_prometheus: &lt;some unique identifer&gt;
-scrape_configs:
-  - job_name: &quot;prometheus&quot;
-    static_configs:
-      - targets: [&quot;localhost:9090&quot;, &quot;localhost:9100&quot;, &quot;localhost:8083&quot;]
-remote_write:
-  - url: &lt;grafana-url&gt;
-    basic_auth:
-      username: &lt;grafana username&gt;
-      password: &lt;grafana api key&gt;
-</code></pre></div>
-<p>If you are hooking up to our grafana instance, you will get an API key from the project, otherwise you'd create a <code>remote_write</code> section that reflects your monitoring stack.</p>
-<p>Now, create a systemd unit to run the database in the file <code>/etc/systemd/system/prometheus.service</code></p>
-<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span><span class="w"></span>
-<span class="na">Description</span><span class="o">=</span><span class="s">Prometheus</span><span class="w"></span>
-<span class="na">Documentation</span><span class="o">=</span><span class="s">https://prometheus.io/docs/introduction/overview/</span><span class="w"></span>
-<span class="na">Wants</span><span class="o">=</span><span class="s">network-online.target</span><span class="w"></span>
-<span class="na">After</span><span class="o">=</span><span class="s">network-online.target</span><span class="w"></span>
-
-<span class="k">[Service]</span><span class="w"></span>
-<span class="na">Type</span><span class="o">=</span><span class="s">simple</span><span class="w"></span>
-<span class="na">User</span><span class="o">=</span><span class="s">prometheus</span><span class="w"></span>
-<span class="na">Group</span><span class="o">=</span><span class="s">prometheus</span><span class="w"></span>
-<span class="na">ExecReload</span><span class="o">=</span><span class="s">/bin/kill -HUP \$MAINPID</span><span class="w"></span>
-<span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/local/bin/prometheus \</span><span class="w"></span>
-<span class="w">  </span><span class="na">--config.file</span><span class="o">=</span><span class="s">/etc/prometheus/prometheus.yml \</span><span class="w"></span>
-<span class="w">  </span><span class="na">--storage.tsdb.path</span><span class="o">=</span><span class="s">/hdd/prometheus \</span><span class="w"></span>
-<span class="w">  </span><span class="na">--web.console.templates</span><span class="o">=</span><span class="s">/etc/prometheus/consoles \</span><span class="w"></span>
-<span class="w">  </span><span class="na">--web.console.libraries</span><span class="o">=</span><span class="s">/etc/prometheus/console_libraries \</span><span class="w"></span>
-<span class="w">  </span><span class="na">--web.listen-address</span><span class="o">=</span><span class="s">0.0.0.0:9090 \</span><span class="w"></span>
-<span class="w">  </span><span class="na">--web.external-url</span><span class="o">=</span><span class="w"></span>
-
-<span class="na">SyslogIdentifier</span><span class="o">=</span><span class="s">prometheus</span><span class="w"></span>
-<span class="na">Restart</span><span class="o">=</span><span class="s">always</span><span class="w"></span>
-
-<span class="k">[Install]</span><span class="w"></span>
-<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span><span class="w"></span>
-</code></pre></div>
-<p>Now update all the permissions of the things we've mucked with to make sure prometheus can use them</p>
-<div class="highlight"><pre><span></span><code><span class="k">for</span> i <span class="k">in</span> rules rules.d files_sd<span class="p">;</span> <span class="k">do</span> sudo chown -R prometheus:prometheus /etc/prometheus/<span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="k">done</span>
-<span class="k">for</span> i <span class="k">in</span> rules rules.d files_sd<span class="p">;</span> <span class="k">do</span> sudo chmod -R <span class="m">775</span> /etc/prometheus/<span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="k">done</span>
-sudo chown -R prometheus:prometheus /hdd/prometheus/
-</code></pre></div>
-<p>Finally, reload systemd and start the service</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl daemon-reload
-sudo systemctl start prometheus
-sudo systemctl <span class="nb">enable</span> prometheus
-</code></pre></div>
-<p>Now we will install the node-exporter, which gives us metrics of the computer itself.</p>
-<div class="highlight"><pre><span></span><code>sudo apt-get install prometheus-node-exporter
-</code></pre></div>
-<h3 id="opentelemetry">OpenTelemetry</h3>
-<p>TODO</p>
+<p>(in the folder that you just cloned, containing the alloy.env and compose.yml files).</p>
 <h2 id="pi-ssh">Pi SSH</h2>
 <p>One nice last thing will be to configure easy access to the Raspberry Pi's SSH. We can do that by creating a passwordless SSH key and installing it on the pi. We're going to be behind ssh anyway, and the Pi isn't public-facing, so this is a safe thing to do.</p>
 <p>On the server, generate a new ssh keypair with</p>
