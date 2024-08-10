@@ -480,6 +480,39 @@ sudo apt install parallel -y
 
 ## Databases and Metrics Collection
 
+### Grafana
+
+We use Grafana as the observability frontend.
+Here, we'll assume you are going to set up a Grafana cloud (free-tier) account.
+While it is possible to use a self-hosted version, we found this to be the most simple.
+
+Steps:
+1. Create a grafana account [here](https://grafana.com/auth/sign-up/create-user?pg=hp&plcmt=cloud-promo&cta=create-free-account)
+2. Pick a stack URL that makes sense
+![](/../assets/grafana_1.png)
+3. Click "Hosted Telemetry Data"
+![](/../assets/grafana_2.png)
+4. Click "Hosted Prometheus metrics"
+![](/../assets/grafana_3.png)
+5. With the default settings of "via Grafana Alloy", scroll down to generate an API token (use any name).
+6. Record the `url`, `username`, and `password` of the generated Alloy configuration
+![](/../assets/grafana_4.png)
+7. Click the grafana logo in the top left corner and then hit "Get started" again.
+8. This time, follow "Hosted Telemetry Data" with "OpenTelemetry (OTLP)"
+9. Again, create an API token, scroll down to the generated Alloy configuration file and find the two sections for "grafana_cloud"
+10. Record the `client.endpoint` and `username` and `password`
+![](/../assets/grafana_5.png)
+11. Again, return to the home screen with the grafana logo, open the menu and navigate to "Dashboards"
+12. In the top right, go to "New" and then "Import"
+![](/../assets/grafana_6.png)
+13. Go to our observability stack and either download or copy the dashboard JSON from [here](https://github.com/GReX-Telescope/grex_observability/blob/main/t0_dashboard.json)
+14. Either load or copy the model and hit "Load" and then finish the import. This is our main pipeline visualization.
+![](/../assets/grafana_7.png)
+15. Go back to dashboards, import again, but this type supply `1860` for the dashboard ID. This is the "Node Exporter" dashboard that will let you monitor all the metrics about your server such as disk usage, network activity, etc.
+16. Select our previously setup prometheus data source
+![](/../assets/grafana_8.png)
+17. Now, continue to the docker setup below:
+
 ### Docker
 
 Following [docker's documentation](https://docs.docker.com/engine/install/ubuntu/), install docker the usual way as that is what orchestrates the databases, log aggregation, and communication to grafana.
@@ -488,6 +521,17 @@ Following [docker's documentation](https://docs.docker.com/engine/install/ubuntu
 
 Somewhere obvious (like the home dir), clone [the stack](https://github.com/GReX-Telescope/grex_observability).
 Copy `alloy.env.example` to `alloy.env` and fill out the sections according to your grafana configuration.
+
+- `GRAFANA_OTLP_ENDPOINT` is `client.endpoint` from the OpenTelemetry config
+- `GRAFANA_OTLP_USER` is `username` from the OpenTelemetry config
+- `GRAFANA_OTLP_PASSWORD` is `username` from the OpenTelemetry config
+- `GRAFANA_PROM_ENDPOINT` is `url` from the Prometheus config
+- `GRAFANA_PROM_USER` is the `username` from the Promethus config
+- `GRAFANA_PROM_PASS` is the `password` from the Prometheus config
+
+Following the Grafana example above, a completed `alloy.env` file will look like this
+![](/../assets/grafana_9.png)
+
 Set docker to run as a systemd service with
 
 ```sh
@@ -496,17 +540,23 @@ sudo systemctl enable docker
 
 if you didn't already in the installation.
 
-And then finally, start the stack with
+Test the stack with
+
+```sh
+sudo docker compose up
+```
+
+Navigate to your Grafana `Node Exporter Full` dashboard (it may take a reselect of `Datasource` to populate) but you should now see the dashboard with all its data.
+
+`Ctrl-C` out of that and then start up the stack in the background with
 
 ```sh
 sudo docker compose up -d
 ```
 
-(in the folder that you just cloned, containing the alloy.env and compose.yml files).
-
 ## Pi SSH
 
-One nice last thing will be to configure easy access to the Raspberry Pi's SSH. We can do that by creating a passwordless SSH key and installing it on the pi. We're going to be behind ssh anyway, and the Pi isn't public-facing, so this is a safe thing to do.
+The last thing will be to configure easy access to the Raspberry Pi's SSH. We can do that by creating a passwordless SSH key and installing it on the pi. We're going to be behind ssh anyway, and the Pi isn't public-facing, so this is a safe thing to do.
 
 On the server, generate a new ssh keypair with
 
