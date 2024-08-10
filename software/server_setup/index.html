@@ -623,6 +623,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#docker" class="md-nav__link">
     Docker
   </a>
@@ -870,6 +877,13 @@
   
     <nav class="md-nav" aria-label="Databases and Metrics Collection">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#docker" class="md-nav__link">
@@ -1227,21 +1241,64 @@ git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 <div class="highlight"><pre><span></span><code>sudo apt install parallel -y
 </code></pre></div>
 <h2 id="databases-and-metrics-collection">Databases and Metrics Collection</h2>
+<h3 id="grafana">Grafana</h3>
+<p>We use Grafana as the observability frontend.
+Here, we'll assume you are going to set up a Grafana cloud (free-tier) account.
+While it is possible to use a self-hosted version, we found this to be the most simple.</p>
+<p>Steps:
+1. Create a grafana account <a href="https://grafana.com/auth/sign-up/create-user?pg=hp&amp;plcmt=cloud-promo&amp;cta=create-free-account">here</a>
+2. Pick a stack URL that makes sense
+<img alt="" src="/../assets/grafana_1.png" />
+3. Click "Hosted Telemetry Data"
+<img alt="" src="/../assets/grafana_2.png" />
+4. Click "Hosted Prometheus metrics"
+<img alt="" src="/../assets/grafana_3.png" />
+5. With the default settings of "via Grafana Alloy", scroll down to generate an API token (use any name).
+6. Record the <code>url</code>, <code>username</code>, and <code>password</code> of the generated Alloy configuration
+<img alt="" src="/../assets/grafana_4.png" />
+7. Click the grafana logo in the top left corner and then hit "Get started" again.
+8. This time, follow "Hosted Telemetry Data" with "OpenTelemetry (OTLP)"
+9. Again, create an API token, scroll down to the generated Alloy configuration file and find the two sections for "grafana_cloud"
+10. Record the <code>client.endpoint</code> and <code>username</code> and <code>password</code>
+<img alt="" src="/../assets/grafana_5.png" />
+11. Again, return to the home screen with the grafana logo, open the menu and navigate to "Dashboards"
+12. In the top right, go to "New" and then "Import"
+<img alt="" src="/../assets/grafana_6.png" />
+13. Go to our observability stack and either download or copy the dashboard JSON from <a href="https://github.com/GReX-Telescope/grex_observability/blob/main/t0_dashboard.json">here</a>
+14. Either load or copy the model and hit "Load" and then finish the import. This is our main pipeline visualization.
+<img alt="" src="/../assets/grafana_7.png" />
+15. Go back to dashboards, import again, but this type supply <code>1860</code> for the dashboard ID. This is the "Node Exporter" dashboard that will let you monitor all the metrics about your server such as disk usage, network activity, etc.
+16. Select our previously setup prometheus data source
+<img alt="" src="/../assets/grafana_8.png" />
+17. Now, continue to the docker setup below:</p>
 <h3 id="docker">Docker</h3>
 <p>Following <a href="https://docs.docker.com/engine/install/ubuntu/">docker's documentation</a>, install docker the usual way as that is what orchestrates the databases, log aggregation, and communication to grafana.</p>
 <h3 id="observability-stack">Observability Stack</h3>
 <p>Somewhere obvious (like the home dir), clone <a href="https://github.com/GReX-Telescope/grex_observability">the stack</a>.
-Copy <code>alloy.env.example</code> to <code>alloy.env</code> and fill out the sections according to your grafana configuration.
-Set docker to run as a systemd service with</p>
+Copy <code>alloy.env.example</code> to <code>alloy.env</code> and fill out the sections according to your grafana configuration.</p>
+<ul>
+<li><code>GRAFANA_OTLP_ENDPOINT</code> is <code>client.endpoint</code> from the OpenTelemetry config</li>
+<li><code>GRAFANA_OTLP_USER</code> is <code>username</code> from the OpenTelemetry config</li>
+<li><code>GRAFANA_OTLP_PASSWORD</code> is <code>username</code> from the OpenTelemetry config</li>
+<li><code>GRAFANA_PROM_ENDPOINT</code> is <code>url</code> from the Prometheus config</li>
+<li><code>GRAFANA_PROM_USER</code> is the <code>username</code> from the Promethus config</li>
+<li><code>GRAFANA_PROM_PASS</code> is the <code>password</code> from the Prometheus config</li>
+</ul>
+<p>Following the Grafana example above, a completed <code>alloy.env</code> file will look like this
+<img alt="" src="/../assets/grafana_9.png" /></p>
+<p>Set docker to run as a systemd service with</p>
 <div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> docker
 </code></pre></div>
 <p>if you didn't already in the installation.</p>
-<p>And then finally, start the stack with</p>
+<p>Test the stack with</p>
+<div class="highlight"><pre><span></span><code>sudo docker compose up
+</code></pre></div>
+<p>Navigate to your Grafana <code>Node Exporter Full</code> dashboard (it may take a reselect of <code>Datasource</code> to populate) but you should now see the dashboard with all its data.</p>
+<p><code>Ctrl-C</code> out of that and then start up the stack in the background with</p>
 <div class="highlight"><pre><span></span><code>sudo docker compose up -d
 </code></pre></div>
-<p>(in the folder that you just cloned, containing the alloy.env and compose.yml files).</p>
 <h2 id="pi-ssh">Pi SSH</h2>
-<p>One nice last thing will be to configure easy access to the Raspberry Pi's SSH. We can do that by creating a passwordless SSH key and installing it on the pi. We're going to be behind ssh anyway, and the Pi isn't public-facing, so this is a safe thing to do.</p>
+<p>The last thing will be to configure easy access to the Raspberry Pi's SSH. We can do that by creating a passwordless SSH key and installing it on the pi. We're going to be behind ssh anyway, and the Pi isn't public-facing, so this is a safe thing to do.</p>
 <p>On the server, generate a new ssh keypair with</p>
 <div class="highlight"><pre><span></span><code>ssh-keygen -t rsa
 </code></pre></div>
