@@ -716,6 +716,11 @@ doesn't already exist) a bash script called <code>snap.sh</code> with the follow
 <span class="nb">exit</span> <span class="m">0</span>
 </code></pre></div>
 <p>Make it executable is <code>chmod +x snap.sh</code>, and use <code>./snap.sh &lt;on|off&gt;</code> to control the power state of the SNAP.</p>
+<p>If you get permission errors when doing so, make sure your Pi's user is a member of the <code>gpio</code> group.
+You can add your user to the group with:</p>
+<div class="highlight"><pre><span></span><code>sudo usermod -a -G gpio <span class="k">$(</span>whoami<span class="k">)</span>
+</code></pre></div>
+<p>then relog and try again.</p>
 <h2 id="running-the-pipeline">Running the Pipeline</h2>
 <p>In the <code>grex</code> folder, under <code>pipeline</code> there is the single bash script that runs the pipeline.
 Simply calling it <code>./grex.sh</code> should start everything up. By default, it will run the normal detection pipeline.
@@ -725,7 +730,7 @@ If you want to just run T0 (packet capture and first stage processing), remove t
 <div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s2">&quot; &quot;</span> &gt; /dev/udp/localhost/65432
 </code></pre></div>
 <h2 id="ssh-port-tunneling">SSH Port Tunneling</h2>
-<p>In some circumstances, it may be usefull to access ports on the GReX server on your local computer remotely. We can accomplish this using <a href="https://www.ssh.com/academy/ssh/tunneling-example">SSH Tunneling</a>.</p>
+<p>In some circumstances, it may be useful to access ports on the GReX server on your local computer remotely. We can accomplish this using <a href="https://www.ssh.com/academy/ssh/tunneling-example">SSH Tunneling</a>.</p>
 <p>One example of why we might want to do this is to access the 10 GbE switch configuration that is located in the
 far-side GReX box. It runs a normal web page on a static ip of <code>192.168.88.1</code>. You can access this from a web
 browser if you are sitting at the GReX server, but not remotely.</p>
@@ -736,7 +741,7 @@ unused, non-privaleged port.</p>
 <p>Another example is perhaps you want to run a <a href="https://jupyter.org/hub">Jupypter Hub</a> instance on the GReX server. In that case, the website it is hosting is on the server itself, so you would run:</p>
 <div class="highlight"><pre><span></span><code>ssh -L <span class="m">8080</span>:localhost:80 username@grex-server-address
 </code></pre></div>
-<p>Another usefull one is access to the Prometheus time-series database used for monitoring. That is active on port <code>9090</code></p>
+<p>Another useful one is access to the Prometheus time-series database used for monitoring. That is active on port <code>9090</code></p>
 <div class="highlight"><pre><span></span><code>ssh -L <span class="m">9090</span>:localhost:9090 username@grex-server-address
 </code></pre></div>
 <h2 id="pulse-injection">Pulse Injection</h2>
