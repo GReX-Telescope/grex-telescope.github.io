@@ -42,6 +42,15 @@ exit 0
 
 Make it executable is `chmod +x snap.sh`, and use `./snap.sh <on|off>` to control the power state of the SNAP.
 
+If you get permission errors when doing so, make sure your Pi's user is a member of the `gpio` group.
+You can add your user to the group with:
+
+```bash
+sudo usermod -a -G gpio $(whoami)
+```
+
+then relog and try again.
+
 ## Running the Pipeline
 
 In the `grex` folder, under `pipeline` there is the single bash script that runs the pipeline.
@@ -58,7 +67,7 @@ echo " " > /dev/udp/localhost/65432
 
 ## SSH Port Tunneling
 
-In some circumstances, it may be usefull to access ports on the GReX server on your local computer remotely. We can accomplish this using [SSH Tunneling](https://www.ssh.com/academy/ssh/tunneling-example).
+In some circumstances, it may be useful to access ports on the GReX server on your local computer remotely. We can accomplish this using [SSH Tunneling](https://www.ssh.com/academy/ssh/tunneling-example).
 
 One example of why we might want to do this is to access the 10 GbE switch configuration that is located in the
 far-side GReX box. It runs a normal web page on a static ip of `192.168.88.1`. You can access this from a web
@@ -77,7 +86,7 @@ Another example is perhaps you want to run a [Jupypter Hub](https://jupyter.org/
 ssh -L 8080:localhost:80 username@grex-server-address
 ```
 
-Another usefull one is access to the Prometheus time-series database used for monitoring. That is active on port `9090`
+Another useful one is access to the Prometheus time-series database used for monitoring. That is active on port `9090`
 
 ```shell
 ssh -L 9090:localhost:9090 username@grex-server-address
