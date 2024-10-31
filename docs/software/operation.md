@@ -147,6 +147,53 @@ injection_cadence=300
 
 Now you are good to go.
 
+## Querying Historical Data
 
+As part of the server setup, we've hooked up a time-series database (Prometheus) to T0, which is used to monitor the state of the telescope.
+This includes recording timestamped values for temperature, ADC counts, and integrated Stokes I data.
+It may be useful to query this data, which is relativly easy to do programatically using Prometheus' [HTTP API](https://prometheus.io/docs/prometheus/latest/querying/api/).
 
+You can explore the database by accessing `http://localhost:9090` on the server (or with SSH-forwarding described above).
 
+### H1 Example
+
+Say you want to query historical Stokes I data around the H1 frequency of 1420 MHz.
+This data is stored in "channels" where the index is the FPGA's channel number.
+If you recall, we operate in the first Nyquist zone, so the spectrum is flipped, where channel 0 represents 1530 MHz and channel 2048 represents 1280 MHz.
+
+Using the `requests` library in Python, we can perform the HTTP request to the database.
+```python
+import requests
+import time
+import numpy as npc
+
+# Get the current (UNIX) time
+now = time.time()
+# We want data, say two weeks back
+past = now - 60 * 60* 24 * 7 * 2
+
+# We want data around 1420 MHz, so around channel 893
+# Might as well grab the block of data around it, so we can watch it change in frequency with time
+channels = [889, 890, 891, 892, 893, 894, 895]
+data = []
+uri_base ='http://127.0.0.1:9090/api/v1/query_range'
+for channel in channels:
+    params = {"query": f'spectrum{{channel="{channel}"}}',
+              "start": then,
+              "end": now,
+              "step": "10m"} # Depending on the timespan, there's a maximum size per query
+    resp = requests.get(uri_base, params=params)
+    # Extract the data  and convert to floats
+    vals = resp.json()['data']['result'][0]['values']
+    data.append(np.array(vals).astype(float))
+
+# Restructure the data into a tensor
+data = np.stack(data)
+
+# The time axis is duplicated many times, we can extract it by looking at one chunk
+timestamps = data[0,:,0]
+
+# And then finally extract our 2D block of time/freq linear power data
+# Indexed in [channel, time]
+spectra = data[:,:,1]
+```
