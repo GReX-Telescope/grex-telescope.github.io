@@ -165,7 +165,7 @@ Using the `requests` library in Python, we can perform the HTTP request to the d
 ```python
 import requests
 import time
-import numpy as npc
+import numpy as np
 
 # Get the current (UNIX) time
 now = time.time()
