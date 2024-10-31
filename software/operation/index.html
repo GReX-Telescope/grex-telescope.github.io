@@ -560,6 +560,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#querying-historical-data" class="md-nav__link">
+    Querying Historical Data
+  </a>
+  
+    <nav class="md-nav" aria-label="Querying Historical Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h1-example" class="md-nav__link">
+    H1 Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -662,6 +682,26 @@
   <a href="#pulse-injection" class="md-nav__link">
     Pulse Injection
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#querying-historical-data" class="md-nav__link">
+    Querying Historical Data
+  </a>
+  
+    <nav class="md-nav" aria-label="Querying Historical Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h1-example" class="md-nav__link">
+    H1 Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -786,6 +826,50 @@ unused, non-privaleged port.</p>
 <div class="highlight"><pre><span></span><code><span class="nv">injection_cadence</span><span class="o">=</span><span class="m">300</span>
 </code></pre></div>
 <p>Now you are good to go.</p>
+<h2 id="querying-historical-data">Querying Historical Data</h2>
+<p>As part of the server setup, we've hooked up a time-series database (Prometheus) to T0, which is used to monitor the state of the telescope.
+This includes recording timestamped values for temperature, ADC counts, and integrated Stokes I data.
+It may be useful to query this data, which is relativly easy to do programatically using Prometheus' <a href="https://prometheus.io/docs/prometheus/latest/querying/api/">HTTP API</a>.</p>
+<p>You can explore the database by accessing <code>http://localhost:9090</code> on the server (or with SSH-forwarding described above).</p>
+<h3 id="h1-example">H1 Example</h3>
+<p>Say you want to query historical Stokes I data around the H1 frequency of 1420 MHz.
+This data is stored in "channels" where the index is the FPGA's channel number.
+If you recall, we operate in the first Nyquist zone, so the spectrum is flipped, where channel 0 represents 1530 MHz and channel 2048 represents 1280 MHz.</p>
+<p>Using the <code>requests</code> library in Python, we can perform the HTTP request to the database.
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">npc</span>
+
+<span class="c1"># Get the current (UNIX) time</span>
+<span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="c1"># We want data, say two weeks back</span>
+<span class="n">past</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="c1"># We want data around 1420 MHz, so around channel 893</span>
+<span class="c1"># Might as well grab the block of data around it, so we can watch it change in frequency with time</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">889</span><span class="p">,</span> <span class="mi">890</span><span class="p">,</span> <span class="mi">891</span><span class="p">,</span> <span class="mi">892</span><span class="p">,</span> <span class="mi">893</span><span class="p">,</span> <span class="mi">894</span><span class="p">,</span> <span class="mi">895</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">uri_base</span> <span class="o">=</span><span class="s1">&#39;http://127.0.0.1:9090/api/v1/query_range&#39;</span>
+<span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;spectrum</span><span class="se">{{</span><span class="s1">channel=&quot;</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s1">&quot;</span><span class="se">}}</span><span class="s1">&#39;</span><span class="p">,</span>
+              <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">then</span><span class="p">,</span>
+              <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+              <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="s2">&quot;10m&quot;</span><span class="p">}</span> <span class="c1"># Depending on the timespan, there&#39;s a maximum size per query</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri_base</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="c1"># Extract the data  and convert to floats</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
+
+<span class="c1"># Restructure the data into a tensor</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># The time axis is duplicated many times, we can extract it by looking at one chunk</span>
+<span class="n">timestamps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># And then finally extract our 2D block of time/freq linear power data</span>
+<span class="c1"># Indexed in [channel, time]</span>
+<span class="n">spectra</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div></p>
 
               
             </article>
