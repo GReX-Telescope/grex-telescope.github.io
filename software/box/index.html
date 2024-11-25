@@ -682,11 +682,17 @@ select <code>files</code> on the left, and upload <a href="../../assets/GReX_Swi
 <h2 id="raspberry-pi">Raspberry Pi</h2>
 <p>We prepared the RPi image using the standard <a href="https://www.raspberrypi.com/software/operating-systems/">raspbian lite OS</a>.
 As part of the initial image creation, we set the hostname to <code>grex-pi</code> and enabled password-based SSH.</p>
+<p>We manually configure the rest of the Pi by plugging a monitor and keyboard into the Pi.</p>
 <p>Using <code>raspi-config</code>, we did the following:
 - disabled the serial login shell
 - enabled the hardware serial interface</p>
 <p>Then, we disabled the hardware's radios by modifying the <code>config.txt</code> file <a href="https://raspberrytips.com/disable-wifi-raspberry-pi/">like so</a>.</p>
-<p>Then, we configured the Pi to have the static IP address of <code>192.168.0.2</code> by following <a href="https://www.makeuseof.com/raspberry-pi-set-static-ip/">this</a></p>
+<p>Then, we configured the Pi to have the static IP address of <code>192.168.0.2</code> by following <a href="https://www.makeuseof.com/raspberry-pi-set-static-ip/">this</a>, which boils down to adding the following to this file <code>/etc/dhcpcd.conf</code>:
+<div class="highlight"><pre><span></span><code><span class="na">interface enp1s0f0</span><span class="w"></span>
+<span class="na">static ip_address</span><span class="o">=</span><span class="s">192.168.0.2/24</span><span class="w"></span>
+<span class="na">static routers</span><span class="o">=</span><span class="s">192.168.0.1</span><span class="w"></span>
+<span class="na">static domain_name_servers</span><span class="o">=</span><span class="s">192.168.0.1</span><span class="w"></span>
+</code></pre></div></p>
 <p>Then, we disabled HCI UART by running</p>
 <div class="highlight"><pre><span></span><code>sudo systemctl disable hciuart
 </code></pre></div>
