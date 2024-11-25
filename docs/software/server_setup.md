@@ -41,6 +41,12 @@ We will be editing a bunch of files, if you are comfy in the command line, you p
 sudo apt-get install emacs vim -y
 ```
 
+We also need `clang` for compiling C-family libraries.
+
+```sh
+sudo apt-get install clang -y
+```
+
 Finally, we will set the hostname. We'll be using the `grex-<affiliation>-<location>` paradigm (just for clarity, no real reason not to).
 As in, the first server that is managed by Caltech at OVRO will be `grex-caltech-ovro`.
 
@@ -123,6 +129,7 @@ dhcp-range=192.168.0.0,static
 dhcp-option=option:router,192.168.0.1
 dhcp-option=option:netmask,255.255.255.0
 #dhcp-host=<SNAP_MAC>,192.168.0.3,snap
+#dhcp-host=<PI_MAC>,192.168.0.2,pi
 log-async
 log-queries
 log-dhcp
@@ -134,19 +141,20 @@ Then, enable the DHCP server service
 sudo systemctl enable dnsmasq --now
 ```
 
-This sets up a very simple DHCP server that will give the IP address `192.168.0.3` to the SNAP.
-Unfortunately, the folks who set up the networking interface for the SNAP only provide a DHCP interface and a dynamic (non-observable) MAC address (for some reason).
-As such, we have to now turn on the SNAP, wait for it to try to get an IP address from `dnsmasq` so we know it's MAC, then update the `dhcp-host` line and restart the DHCP server.
+This sets up a very simple DHCP server that will give the IP address `192.168.0.3` to the SNAP and `192.168.0.2` to the Pi.
+Unfortunately, the folks who set up the networking interface for the SNAP only provide a DHCP interface and a dynamic (non-observable) MAC address (for some reason). There can also be issues with setting up the Pi within the DHCP server, so it is easiest to set it up alongside the SNAP.
+Turn on the SNAP and Pi, wait for them to try to get IP addresses from `dnsmasq` so we know their MACs, then update the `dhcp-host` lines for both and restart the DHCP server.
 
-1. Power cycle the SNAP (or turn it on if it wasn't turned on yet) following the instructions in [operation](operation.md)
-2. Wait a moment and open the log of dnsmasq with `journalctl -u dnsmasq`, skip to the bottom with `G` (Shift + g)
-3. You should see a line like
+1. Configure the Pi following the instructions in [box setup](box.md)
+2. Power cycle the SNAP (or turn them on if they weren't turned on yet) following the instructions in [operation](operation.md)
+3. Wait a moment and open the log of dnsmasq with `journalctl -u dnsmasq`, skip to the bottom with `G` (Shift + g)
+4. You should see two lines like this one but with different MAC addresses (and the Pi will say `pi` rather than `no address available`, which differentiates it from the SNAP)
 
 ```
 Aug 16 14:39:06 grex-caltech-ovro dnsmasq-dhcp[5115]: 1085377743 DHCPDISCOVER(enp1s0f0) 00:40:bf:06:13:02 no address available
 ```
 
-This implies the SNAP has a MAC address of `00:40:bf:06:13:02` (yours will be different). 4. Go back and uncomment and edit the `dhcp-host` line of `/etc/dnsmasq.conf` to contain this MAC.
+This implies the SNAP has a MAC address of `00:40:bf:06:13:02` (yours will be different). 4. Go back and uncomment and edit the `dhcp-host` lines of `/etc/dnsmasq.conf` to contain the corresponding MACs for the SNAP and Pi.
 For example, in this case we would put `dhcp-host=00:40:bf:06:13:02,192.168.0.3,snap` 5. Finally, restart the dhcp server with `sudo systemctl restart dnsmasq`
 
 After waiting a bit for the SNAP to send a new request for a DHCP lease, look at the latest logs again from journalctl. If it ends with something like
@@ -167,7 +175,7 @@ Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 o
 Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option:  3 router  192.168.0.1
 ```
 
-That means the SNAP got an IP. You should now be able to `ping 192.168.0.3` to make sure it's alive.
+That means the SNAP got an IP. There should be similar lines for the Pi. You should now be able to `ping 192.168.0.3` and `ping 192.168.0.2` to make sure the SNAP and Pi are alive.
 
 ### Advanced 10 GbE Settings
 
@@ -332,6 +340,7 @@ Similar process to build the pulse-detection software, heimdall.
 First, clone our fork in our `~/src` directory:
 
 ```sh
+cd ../
 git clone --recurse-submodules  https://github.com/GReX-Telescope/heimdall-astro
 cd heimdall-astro
 ```
@@ -469,7 +478,45 @@ git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 Then, assuming you followed all the previous steps, build the pipeline software with
 
 ```sh
-./grex/build.sh
+cd /grex
+./build.sh
+```
+
+Next, you need to setup a `.env` file with preset variables for the pipeline to access at startup.
+```sh
+cd /pipeline
+./grex.sh env
+```
+
+Edit the `mac=` line of `.env` to include the NIC MAC address (here the address is `80:61:5f:0a:4c:d4`, yours will be different).
+
+```ini
+mac="80:61:5f:0a:4c:d4"
+```
+
+To get you NIC MAC address, run `ifconfig` and find this section of output starting with the ethernet connection to the box (`enp1s0f0`). The address after `ether` is the NIC address.
+
+```sh
+enp1s0f0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9000
+        inet 192.168.0.1  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 fe80::8261:5fff:fe0a:4cd4  prefixlen 64  scopeid 0x20<link>
+        ether 80:61:5f:0a:4c:d4  txqueuelen 1000  (Ethernet)
+        RX packets 31312797155  bytes 258061589774450 (258.0 TB)
+        RX errors 10  dropped 10  overruns 0  frame 10
+        TX packets 2158805  bytes 123243792 (123.2 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+Next, make the directories where all the data will be stored and change ownership to `user` (or whatever username you use)
+```sh
+cd /hdd
+mkdir data
+sudo chown user data
+mkdir data/voltages
+mkdir data/filterbanks
+mkdir -p data/candidates/T2
+mkdir -p data/candidates/T3/candfils
+mkdir -p data/candidates/T3/candplots
 ```
 
 Lastly, you'll need to install the `parallel` package
@@ -477,6 +524,16 @@ Lastly, you'll need to install the `parallel` package
 ```sh
 sudo apt install parallel -y
 ```
+
+Now you can run the pipeline
+```sh
+cd ~/grex/pipeline
+./grex.sh full
+```
+
+## Pipeline Injection and Coincidencing
+
+NOTE: The injection and coincidencing software (T3) is currently written to operate as services that run in the background. We are changing this to make it a proper section of the pipeline that will be installed fully with the rest of the pipeline.
 
 ## Databases and Metrics Collection
 
