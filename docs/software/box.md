@@ -27,13 +27,21 @@ select `files` on the left, and upload [this config file](../assets/GReX_Switch.
 We prepared the RPi image using the standard [raspbian lite OS](https://www.raspberrypi.com/software/operating-systems/).
 As part of the initial image creation, we set the hostname to `grex-pi` and enabled password-based SSH.
 
+We manually configure the rest of the Pi by plugging a monitor and keyboard into the Pi.
+
 Using `raspi-config`, we did the following:
 - disabled the serial login shell
 - enabled the hardware serial interface
 
 Then, we disabled the hardware's radios by modifying the `config.txt` file [like so](https://raspberrytips.com/disable-wifi-raspberry-pi/).
 
-Then, we configured the Pi to have the static IP address of `192.168.0.2` by following [this](https://www.makeuseof.com/raspberry-pi-set-static-ip/)
+Then, we configured the Pi to have the static IP address of `192.168.0.2` by following [this](https://www.makeuseof.com/raspberry-pi-set-static-ip/), which boils down to adding the following to this file `/etc/dhcpcd.conf`:
+```ini
+interface enp1s0f0
+static ip_address=192.168.0.2/24
+static routers=192.168.0.1
+static domain_name_servers=192.168.0.1
+```
 
 Then, we disabled HCI UART by running
 
