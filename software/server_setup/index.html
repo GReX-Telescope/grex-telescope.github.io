@@ -615,6 +615,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pipeline-injection-and-coincidencing" class="md-nav__link">
+    Pipeline Injection and Coincidencing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#databases-and-metrics-collection" class="md-nav__link">
     Databases and Metrics Collection
   </a>
@@ -871,6 +878,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pipeline-injection-and-coincidencing" class="md-nav__link">
+    Pipeline Injection and Coincidencing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#databases-and-metrics-collection" class="md-nav__link">
     Databases and Metrics Collection
   </a>
@@ -952,6 +966,9 @@ sudo apt-get upgrade -y
 <p>We will be editing a bunch of files, if you are comfy in the command line, you probably want to install some editors. Otherwise the graphical <code>gedit</code> tool will be fine.</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install emacs vim -y
 </code></pre></div>
+<p>We also need <code>clang</code> for compiling C-family libraries.</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install clang -y
+</code></pre></div>
 <p>Finally, we will set the hostname. We'll be using the <code>grex-&lt;affiliation&gt;-&lt;location&gt;</code> paradigm (just for clarity, no real reason not to).
 As in, the first server that is managed by Caltech at OVRO will be <code>grex-caltech-ovro</code>.</p>
 <div class="highlight"><pre><span></span><code>sudo hostnamectl set-hostname &lt;your-hostname&gt;
@@ -1006,6 +1023,7 @@ sudo systemctl enable systemd-networkd
 <span class="na">dhcp-option</span><span class="o">=</span><span class="s">option:router,192.168.0.1</span><span class="w"></span>
 <span class="na">dhcp-option</span><span class="o">=</span><span class="s">option:netmask,255.255.255.0</span><span class="w"></span>
 <span class="c1">#dhcp-host=&lt;SNAP_MAC&gt;,192.168.0.3,snap</span><span class="w"></span>
+<span class="c1">#dhcp-host=&lt;PI_MAC&gt;,192.168.0.2,pi</span><span class="w"></span>
 <span class="na">log-async</span><span class="w"></span>
 <span class="na">log-queries</span><span class="w"></span>
 <span class="na">log-dhcp</span><span class="w"></span>
@@ -1013,17 +1031,18 @@ sudo systemctl enable systemd-networkd
 <p>Then, enable the DHCP server service</p>
 <div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> dnsmasq --now
 </code></pre></div>
-<p>This sets up a very simple DHCP server that will give the IP address <code>192.168.0.3</code> to the SNAP.
-Unfortunately, the folks who set up the networking interface for the SNAP only provide a DHCP interface and a dynamic (non-observable) MAC address (for some reason).
-As such, we have to now turn on the SNAP, wait for it to try to get an IP address from <code>dnsmasq</code> so we know it's MAC, then update the <code>dhcp-host</code> line and restart the DHCP server.</p>
+<p>This sets up a very simple DHCP server that will give the IP address <code>192.168.0.3</code> to the SNAP and <code>192.168.0.2</code> to the Pi.
+Unfortunately, the folks who set up the networking interface for the SNAP only provide a DHCP interface and a dynamic (non-observable) MAC address (for some reason). There can also be issues with setting up the Pi within the DHCP server, so it is easiest to set it up alongside the SNAP.
+Turn on the SNAP and Pi, wait for them to try to get IP addresses from <code>dnsmasq</code> so we know their MACs, then update the <code>dhcp-host</code> lines for both and restart the DHCP server.</p>
 <ol>
-<li>Power cycle the SNAP (or turn it on if it wasn't turned on yet) following the instructions in <a href="../operation/">operation</a></li>
+<li>Configure the Pi following the instructions in <a href="../box/">box setup</a></li>
+<li>Power cycle the SNAP (or turn them on if they weren't turned on yet) following the instructions in <a href="../operation/">operation</a></li>
 <li>Wait a moment and open the log of dnsmasq with <code>journalctl -u dnsmasq</code>, skip to the bottom with <code>G</code> (Shift + g)</li>
-<li>You should see a line like</li>
+<li>You should see two lines like this one but with different MAC addresses (and the Pi will say <code>pi</code> rather than <code>no address available</code>, which differentiates it from the SNAP)</li>
 </ol>
 <div class="highlight"><pre><span></span><code>Aug 16 14:39:06 grex-caltech-ovro dnsmasq-dhcp[5115]: 1085377743 DHCPDISCOVER(enp1s0f0) 00:40:bf:06:13:02 no address available
 </code></pre></div>
-<p>This implies the SNAP has a MAC address of <code>00:40:bf:06:13:02</code> (yours will be different). 4. Go back and uncomment and edit the <code>dhcp-host</code> line of <code>/etc/dnsmasq.conf</code> to contain this MAC.
+<p>This implies the SNAP has a MAC address of <code>00:40:bf:06:13:02</code> (yours will be different). 4. Go back and uncomment and edit the <code>dhcp-host</code> lines of <code>/etc/dnsmasq.conf</code> to contain the corresponding MACs for the SNAP and Pi.
 For example, in this case we would put <code>dhcp-host=00:40:bf:06:13:02,192.168.0.3,snap</code> 5. Finally, restart the dhcp server with <code>sudo systemctl restart dnsmasq</code></p>
 <p>After waiting a bit for the SNAP to send a new request for a DHCP lease, look at the latest logs again from journalctl. If it ends with something like</p>
 <div class="highlight"><pre><span></span><code>Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 DHCPREQUEST(enp1s0f0) 192.168.0.3 00:40:bf:06:13:02
@@ -1040,7 +1059,7 @@ Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 o
 Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option:  1 netmask  255.255.255.0
 Aug 16 14:43:02 grex-caltech-ovro dnsmasq-dhcp[6024]: 1085377743 sent size:  4 option:  3 router  192.168.0.1
 </code></pre></div>
-<p>That means the SNAP got an IP. You should now be able to <code>ping 192.168.0.3</code> to make sure it's alive.</p>
+<p>That means the SNAP got an IP. There should be similar lines for the Pi. You should now be able to <code>ping 192.168.0.3</code> and <code>ping 192.168.0.2</code> to make sure the SNAP and Pi are alive.</p>
 <h3 id="advanced-10-gbe-settings">Advanced 10 GbE Settings</h3>
 <p>Unfortunately, the OS's default configuration for the 10 GbE network card is not optimized for our use-case of streaming time domain science data. As such, we need to adjust a few things.</p>
 <p>Create the file <code>/etc/sysctl.d/20-grex.conf</code> with the following contents:</p>
@@ -1141,7 +1160,8 @@ sudo ninja install
 <h3 id="heimdall">Heimdall</h3>
 <p>Similar process to build the pulse-detection software, heimdall.
 First, clone our fork in our <code>~/src</code> directory:</p>
-<div class="highlight"><pre><span></span><code>git clone --recurse-submodules  https://github.com/GReX-Telescope/heimdall-astro
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> ../
+git clone --recurse-submodules  https://github.com/GReX-Telescope/heimdall-astro
 <span class="nb">cd</span> heimdall-astro
 </code></pre></div>
 <p>Install some build dependencies</p>
@@ -1235,11 +1255,45 @@ This is easy enough with <a href="https://rustup.rs/">rustup</a></p>
 git clone --recurse-submodules https://github.com/GReX-Telescope/grex
 </code></pre></div>
 <p>Then, assuming you followed all the previous steps, build the pipeline software with</p>
-<div class="highlight"><pre><span></span><code>./grex/build.sh
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /grex
+./build.sh
 </code></pre></div>
+<p>Next, you need to setup a <code>.env</code> file with preset variables for the pipeline to access at startup.
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /pipeline
+./grex.sh env
+</code></pre></div></p>
+<p>Edit the <code>mac=</code> line of <code>.env</code> to include the NIC MAC address (here the address is <code>80:61:5f:0a:4c:d4</code>, yours will be different).</p>
+<div class="highlight"><pre><span></span><code><span class="na">mac</span><span class="o">=</span><span class="s">&quot;80:61:5f:0a:4c:d4&quot;</span><span class="w"></span>
+</code></pre></div>
+<p>To get you NIC MAC address, run <code>ifconfig</code> and find this section of output starting with the ethernet connection to the box (<code>enp1s0f0</code>). The address after <code>ether</code> is the NIC address.</p>
+<div class="highlight"><pre><span></span><code>enp1s0f0: <span class="nv">flags</span><span class="o">=</span><span class="m">4163</span>&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">9000</span>
+        inet <span class="m">192</span>.168.0.1  netmask <span class="m">255</span>.255.255.0  broadcast <span class="m">192</span>.168.0.255
+        inet6 fe80::8261:5fff:fe0a:4cd4  prefixlen <span class="m">64</span>  scopeid 0x20&lt;link&gt;
+        ether <span class="m">80</span>:61:5f:0a:4c:d4  txqueuelen <span class="m">1000</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">31312797155</span>  bytes <span class="m">258061589774450</span> <span class="o">(</span><span class="m">258</span>.0 TB<span class="o">)</span>
+        RX errors <span class="m">10</span>  dropped <span class="m">10</span>  overruns <span class="m">0</span>  frame <span class="m">10</span>
+        TX packets <span class="m">2158805</span>  bytes <span class="m">123243792</span> <span class="o">(</span><span class="m">123</span>.2 MB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+</code></pre></div>
+<p>Next, make the directories where all the data will be stored and change ownership to <code>user</code> (or whatever username you use)
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /hdd
+mkdir data
+sudo chown user data
+mkdir data/voltages
+mkdir data/filterbanks
+mkdir -p data/candidates/T2
+mkdir -p data/candidates/T3/candfils
+mkdir -p data/candidates/T3/candplots
+</code></pre></div></p>
 <p>Lastly, you'll need to install the <code>parallel</code> package</p>
 <div class="highlight"><pre><span></span><code>sudo apt install parallel -y
 </code></pre></div>
+<p>Now you can run the pipeline
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> ~/grex/pipeline
+./grex.sh full
+</code></pre></div></p>
+<h2 id="pipeline-injection-and-coincidencing">Pipeline Injection and Coincidencing</h2>
+<p>NOTE: The injection and coincidencing software (T3) is currently written to operate as services that run in the background. We are changing this to make it a proper section of the pipeline that will be installed fully with the rest of the pipeline.</p>
 <h2 id="databases-and-metrics-collection">Databases and Metrics Collection</h2>
 <h3 id="grafana">Grafana</h3>
 <p>We use Grafana as the observability frontend.
