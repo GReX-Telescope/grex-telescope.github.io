@@ -1327,9 +1327,35 @@ While it is possible to use a self-hosted version, we found this to be the most 
 17. Now, continue to the docker setup below:</p>
 <h3 id="docker">Docker</h3>
 <p>Following <a href="https://docs.docker.com/engine/install/ubuntu/">docker's documentation</a>, install docker the usual way as that is what orchestrates the databases, log aggregation, and communication to grafana.</p>
+<p>Set docker to run as a systemd service with</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> docker
+</code></pre></div>
+<p>if you didn't already in the installation.</p>
 <h3 id="observability-stack">Observability Stack</h3>
-<p>Somewhere obvious (like the home dir), clone <a href="https://github.com/GReX-Telescope/grex_observability">the stack</a>.
-Copy <code>alloy.env.example</code> to <code>alloy.env</code> and fill out the sections according to your grafana configuration.</p>
+<p>Somewhere obvious (like the home dir), clone <a href="https://github.com/GReX-Telescope/grex_observability">the stack</a> and <code>cd grex_observability</code>.</p>
+<p>The file <code>compose.yml</code> (in conjunction with <code>config.alloy</code>) tells Docker how to build the containers and set up the Prometheus and OpenTelemetry services. By default, <code>compose.yml</code> will utilize a predefined image of Prometheus to store data at <code>/var/lib/docker/volumes/</code> for 15 days. We want to have access to much longer time streams than this, meaning we need to change the location to somewhere on disk with greater available space and change the retention to some longer duration, say 2 years. Change the Prometheus section of <code>compose.yml</code> to the following (or to alternative disk location and retention time):
+<div class="highlight"><pre><span></span><code><span class="na">prometheus:</span><span class="w"></span>
+<span class="w">    </span><span class="na">image: prom/prometheus:latest</span><span class="w"></span>
+<span class="w">    </span><span class="na">container_name: prometheus</span><span class="w"></span>
+<span class="w">    </span><span class="na">command:</span><span class="w"></span>
+<span class="w">      </span><span class="na">- &quot;--config.file</span><span class="o">=</span><span class="s">/etc/prometheus/prometheus.yml&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="na">- &quot;--enable-feature</span><span class="o">=</span><span class="s">remote-write-receiver&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="na">- &quot;--storage.tsdb.retention.time</span><span class="o">=</span><span class="s">2y&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="na">- &quot;--storage.tsdb.path</span><span class="o">=</span><span class="s">/prometheus&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="na">ports:</span><span class="w"></span>
+<span class="w">      </span><span class="na">- 9090:9090</span><span class="w"></span>
+<span class="w">    </span><span class="na">restart: always</span><span class="w"></span>
+<span class="w">    </span><span class="na">volumes:</span><span class="w"></span>
+<span class="w">      </span><span class="na">- /hdd/prometheus:/prometheus</span><span class="w"></span>
+</code></pre></div>
+Check the UID and GID of the Prometheus image (most likely 65534:65534, equivalent to nobody:nogroup).
+<div class="highlight"><pre><span></span><code>docker run --rm prom/prometheus sh -c &#39;id&#39;
+</code></pre></div></p>
+<p>Now make <code>/hdd/prometheus</code> and give the service ownership so it can write to it.
+<div class="highlight"><pre><span></span><code>mkdir /hdd/prometheus
+sudo chown -R 65534:65534 /hdd/prometheus
+</code></pre></div></p>
+<p>Copy <code>alloy.env.example</code> to <code>alloy.env</code> and fill out the sections according to your grafana configuration.</p>
 <ul>
 <li><code>GRAFANA_OTLP_ENDPOINT</code> is <code>client.endpoint</code> from the OpenTelemetry config</li>
 <li><code>GRAFANA_OTLP_USER</code> is <code>username</code> from the OpenTelemetry config</li>
@@ -1340,10 +1366,6 @@ Copy <code>alloy.env.example</code> to <code>alloy.env</code> and fill out the s
 </ul>
 <p>Following the Grafana example above, a completed <code>alloy.env</code> file will look like this
 <img alt="" src="/../assets/grafana_9.png" /></p>
-<p>Set docker to run as a systemd service with</p>
-<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> docker
-</code></pre></div>
-<p>if you didn't already in the installation.</p>
 <p>Test the stack with</p>
 <div class="highlight"><pre><span></span><code>sudo docker compose up
 </code></pre></div>
