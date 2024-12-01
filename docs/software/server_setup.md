@@ -574,9 +574,45 @@ Steps:
 
 Following [docker's documentation](https://docs.docker.com/engine/install/ubuntu/), install docker the usual way as that is what orchestrates the databases, log aggregation, and communication to grafana.
 
+Set docker to run as a systemd service with
+
+```sh
+sudo systemctl enable docker
+```
+
+if you didn't already in the installation.
+
 ### Observability Stack
 
-Somewhere obvious (like the home dir), clone [the stack](https://github.com/GReX-Telescope/grex_observability).
+Somewhere obvious (like the home dir), clone [the stack](https://github.com/GReX-Telescope/grex_observability) and `cd grex_observability`.
+
+The file `compose.yml` (in conjunction with `config.alloy`) tells Docker how to build the containers and set up the Prometheus and OpenTelemetry services. By default, `compose.yml` will utilize a predefined image of Prometheus to store data at `/var/lib/docker/volumes/` for 15 days. We want to have access to much longer time streams than this, meaning we need to change the location to somewhere on disk with greater available space and change the retention to some longer duration, say 2 years. Change the Prometheus section of `compose.yml` to the following (or to alternative disk location and retention time):
+```ini
+prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--enable-feature=remote-write-receiver"
+      - "--storage.tsdb.retention.time=2y"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - 9090:9090
+    restart: always
+    volumes:
+      - /hdd/prometheus:/prometheus
+```
+Check the UID and GID of the Prometheus image (most likely 65534:65534, equivalent to nobody:nogroup).
+```sf
+docker run --rm prom/prometheus sh -c 'id'
+```
+
+Now make `/hdd/prometheus` and give the service ownership so it can write to it.
+```sf
+mkdir /hdd/prometheus
+sudo chown -R 65534:65534 /hdd/prometheus
+```
+
 Copy `alloy.env.example` to `alloy.env` and fill out the sections according to your grafana configuration.
 
 - `GRAFANA_OTLP_ENDPOINT` is `client.endpoint` from the OpenTelemetry config
@@ -588,14 +624,6 @@ Copy `alloy.env.example` to `alloy.env` and fill out the sections according to y
 
 Following the Grafana example above, a completed `alloy.env` file will look like this
 ![](/../assets/grafana_9.png)
-
-Set docker to run as a systemd service with
-
-```sh
-sudo systemctl enable docker
-```
-
-if you didn't already in the installation.
 
 Test the stack with
 
