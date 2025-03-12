@@ -1,6 +1,6 @@
-# The Global Radio Explorer Telescope
+# The Galactic Radio Explorer Telescope
 
-Welcome to the documentation for the Global Radio Explorer Telescope! In the
+Welcome to the documentation for the Galactic Radio Explorer Telescope! In the
 tabs above, you'll find the documentation for the hardware and software
 architectures as well as guides for construction and setup. 
 The status of the different stations are listed below, 
