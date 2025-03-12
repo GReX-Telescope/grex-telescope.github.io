@@ -1,4 +1,4 @@
-The Global Radio Telescope is an new low-cost radio telescope designed to be
+The Galactic Radio Telescope is an new low-cost radio telescope designed to be
 an all-sky monitor for bright radio bursts. Building on the success of STARE2,
 we will search for fast radio bursts (FRBs) emitted from Galactic magnetars as
 well as bursts from nearby galaxies. GReX will search down to ten microseconds
