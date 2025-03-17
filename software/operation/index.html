@@ -575,6 +575,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#general-querying-script" class="md-nav__link">
+    General Querying Script
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -696,6 +703,13 @@
           <li class="md-nav__item">
   <a href="#h1-example" class="md-nav__link">
     H1 Example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general-querying-script" class="md-nav__link">
+    General Querying Script
   </a>
   
 </li>
@@ -870,6 +884,103 @@ If you recall, we operate in the first Nyquist zone, so the spectrum is flipped,
 <span class="c1"># Indexed in [channel, time]</span>
 <span class="n">spectra</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
 </code></pre></div></p>
+<h3 id="general-querying-script">General Querying Script</h3>
+<p>We also provide a script for querying historical Stokes I data for arbitrary time and frequency ranges.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy</span> <span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pytz</span>
+
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="k">class</span> <span class="nc">Query</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_range</span><span class="o">=</span><span class="s1">&#39;HI&#39;</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="s1">&#39;10m&#39;</span><span class="p">,</span> <span class="n">local_timezone</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        freq_range: the range of frequencies you want included in the dynamic spectrum - HI and Full give default ranges around 1420.4MHz and the full band</span>
+<span class="sd">        start_time: the start of the query given by UTC (not local) format mm-dd-yy hh:mm:ss</span>
+<span class="sd">        end_time: the end of the query given by UTC (not local) format mm-dd-yy hh:mm:ss</span>
+<span class="sd">        dt: the time step for querying (provide in minutes (m) or seconds (s))</span>
+<span class="sd">        local_timezone: time-zone specifed in pytz format</span>
+<span class="sd">        ###########################</span>
+<span class="sd">        dynamic_spectrum: an xarray dynamic spectrum with frequecy and time (in datetime format) axes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Set frequency range based on input</span>
+        <span class="k">if</span> <span class="n">freq_range</span> <span class="o">==</span> <span class="s1">&#39;HI&#39;</span><span class="p">:</span> <span class="n">freq_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1415</span><span class="p">,</span> <span class="mi">1425</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">freq_range</span> <span class="o">==</span> <span class="s1">&#39;Full&#39;</span><span class="p">:</span> <span class="n">freq_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">1530</span><span class="p">]</span>
+
+        <span class="c1"># Compare frequency range with frequency channel bin edges</span>
+        <span class="n">freq_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1530</span><span class="p">,</span> <span class="mi">1280</span><span class="p">,</span> <span class="mi">2049</span><span class="p">)</span>
+        <span class="n">chan_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freq_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&gt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">freq_range</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freq_vec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">freq_range</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">chan_vec</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="p">((</span><span class="n">freq_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">freq_vec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="c1"># Parse start and stop times</span>
+        <span class="k">if</span> <span class="n">start_time</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both &#39;start&#39; and &#39;stop&#39; arguments must be provided in &#39;MM-DD-YY HH:MM:SS&#39; format.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Input times in UTC to local time zone (Prometheus has time stamps in local time?)</span>
+        <span class="n">utc</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span>
+        <span class="n">ltz</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">local_timezone</span><span class="p">)</span>
+        <span class="n">start_ltz</span> <span class="o">=</span> <span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%y %H:%M:%S&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">ltz</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+        <span class="n">stop_ltz</span> <span class="o">=</span> <span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%y %H:%M:%S&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">ltz</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">stop_ltz</span> <span class="o">&lt;=</span> <span class="n">start_ltz</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;stop&#39; time must be later than the &#39;start&#39; time.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Break the time range into daily chunks</span>
+        <span class="n">day_seconds</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span>
+        <span class="n">time_chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_chunks</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_ltz</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">stop_ltz</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="n">day_seconds</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">uri_base</span> <span class="o">=</span> <span class="s1">&#39;http://127.0.0.1:9090/api/v1/query_range&#39;</span>
+
+        <span class="c1"># Query each channel and time chunk</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="n">channel_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="ow">in</span> <span class="n">time_chunks</span><span class="p">:</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;spectrum</span><span class="se">{{</span><span class="s1">channel=&quot;</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s1">&quot;</span><span class="se">}}</span><span class="s1">&#39;</span><span class="p">,</span>
+                    <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">chunk_start</span><span class="p">,</span>
+                    <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">chunk_end</span><span class="p">,</span>
+                    <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">dt</span>
+                <span class="p">}</span>
+                <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri_base</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error querying channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> for range </span><span class="si">{</span><span class="n">chunk_start</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">chunk_end</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span>
+                    <span class="n">channel_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data for channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> in range </span><span class="si">{</span><span class="n">chunk_start</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">chunk_end</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">channel_data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
+
+        <span class="c1"># Restructure the data into a tensor</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Extract timestamps (default in UTC) and convert them to datetime</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">datetimes_utc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+        <span class="c1"># Extract the 2D spectra data [channel, time]</span>
+        <span class="n">spectra</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_spectrum</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">spectra</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;freq&#39;</span><span class="p">:</span><span class="n">frequencies</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">datetimes_utc</span><span class="p">},</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">get_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current_start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="k">while</span> <span class="n">current_start</span> <span class="o">&lt;</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="n">current_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">current_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+            <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">current_start</span><span class="p">,</span> <span class="n">current_end</span><span class="p">))</span>
+            <span class="c1"># Advance the start time for the next chunk without overlap</span>
+            <span class="n">current_start</span> <span class="o">=</span> <span class="n">current_end</span> <span class="o">+</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># Avoid overlapping the end of this chunk</span>
+        <span class="k">return</span> <span class="n">chunks</span>
+</code></pre></div>
 
               
             </article>
