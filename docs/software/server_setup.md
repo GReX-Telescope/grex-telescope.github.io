@@ -262,8 +262,8 @@ sudo apt-get -y install cuda-toolkit-12-3
 And then install the open-source kernel drivers (Version 545) (overwriting previously installed ones)
 
 ```sh
-sudo apt-get install -y nvidia-kernel-open-545
-sudo apt-get install -y cuda-drivers-545
+sudo apt-get install -y nvidia-kernel-open-555
+sudo apt-get install -y cuda-drivers-555
 ```
 
 You may want to run the following to cleanup old dependencies/driver versions that may have been preinstalled
